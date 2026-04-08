@@ -205,13 +205,16 @@ async function main() {
   console.log(`  ✅ ${badges.length} badges criadas`);
 
   // -----------------------------------------------------------
-  // 5. Teams e Funções de demonstração
+  // 5. Teams e Funções Reais (Base FBR / ARVA)
   // -----------------------------------------------------------
   const teams = [
-    { code: "CORE",       name: "Core Operations",    description: "Operações centrais da organização" },
-    { code: "SUPPORT",    name: "Customer Support",   description: "Suporte ao cliente" },
-    { code: "CONTENT",    name: "Content & Comms",    description: "Conteúdo e comunicação" },
-    { code: "ANALYTICS",  name: "Analytics",          description: "Análise e dados" },
+    { code: "MARKETING",   name: "Marketing",               description: "Equipe de Marketing e Growth" },
+    { code: "TECH",        name: "Tecnologia & Dev",        description: "Engenharia e Orquestração" },
+    { code: "EXEC",        name: "Diretoria & Estratégia",  description: "Inteligência Estratégica" },
+    { code: "FBR_SUPPORT", name: "Suporte FBR",             description: "Atendimento e Secretariado FBR" },
+    { code: "FBR_SALES",   name: "FBR Sales",               description: "Vendas e Comercial" },
+    { code: "FBR_RJ",      name: "FBR - Rio de Janeiro",    description: "Operações Locais RJ" },
+    { code: "ARVA",        name: "ARVA Hub",                description: "Agentes do Ecossistema ARVA" },
   ];
 
   for (const t of teams) {
@@ -221,15 +224,17 @@ async function main() {
       create: t,
     });
   }
-  console.log(`  ✅ ${teams.length} equipes criadas`);
+  console.log(`  ✅ ${teams.length} equipes reais criadas`);
 
   const functions = [
-    { code: "ORCHESTRATOR",  name: "Orquestrador",     description: "Coordena outros agentes" },
-    { code: "ANALYST",       name: "Analista",         description: "Análise e diagnóstico" },
-    { code: "WRITER",        name: "Redator",          description: "Produção de conteúdo" },
-    { code: "REVIEWER",      name: "Revisor",          description: "Revisão e avaliação" },
-    { code: "SUPPORT_AGENT", name: "Agente de Suporte",description: "Atendimento e suporte" },
-    { code: "SDR",           name: "SDR",              description: "Prospecção e qualificação" },
+    { code: "MKT_MANAGER",    name: "Marketing Manager",          description: "Gestão de Marketing" },
+    { code: "ORCHESTRATOR",   name: "Orquestradora",              description: "Coordena fluxos de agentes" },
+    { code: "SENIOR_DEV",     name: "Programador Sênior",         description: "Desenvolvimento avançado" },
+    { code: "FRONTEND_SPEC",  name: "Frontend Specialist",        description: "Especialista em UI/UX e Frontend" },
+    { code: "EXEC_ASSISTANT", name: "Executive Assistant & SI",   description: "Assistência e Inteligência Estratégica" },
+    { code: "SECRETARY",      name: "Secretary",                  description: "Secretariado e Suporte" },
+    { code: "SALES_MANAGER",  name: "Sales Manager",              description: "Gestão de Vendas" },
+    { code: "AGENTE",         name: "Agente",                     description: "Operações de Agente Base" },
   ];
 
   for (const f of functions) {
@@ -242,26 +247,26 @@ async function main() {
   console.log(`  ✅ ${functions.length} funções criadas`);
 
   // -----------------------------------------------------------
-  // 6. Agentes de demonstração
+  // 6. Agentes da Corporação (Cadastrados na Engine)
   // -----------------------------------------------------------
-  const coreTeam = await prisma.team.findUnique({ where: { code: "CORE" } });
-  const supportTeam = await prisma.team.findUnique({ where: { code: "SUPPORT" } });
-  const contentTeam = await prisma.team.findUnique({ where: { code: "CONTENT" } });
+  const getTeam = await prisma.team.findMany();
+  const getFn = await prisma.functionCatalog.findMany();
 
-  const orchestratorFn = await prisma.functionCatalog.findUnique({ where: { code: "ORCHESTRATOR" } });
-  const analystFn = await prisma.functionCatalog.findUnique({ where: { code: "ANALYST" } });
-  const writerFn = await prisma.functionCatalog.findUnique({ where: { code: "WRITER" } });
-  const supportFn = await prisma.functionCatalog.findUnique({ where: { code: "SUPPORT_AGENT" } });
+  const tid = (code: string) => getTeam.find(t => t.code === code)?.id;
+  const fid = (code: string) => getFn.find(f => f.code === code)?.id;
 
   const agents = [
-    { code: "ARVA-01",  displayName: "ARVA",         teamId: coreTeam?.id,    functionId: orchestratorFn?.id, status: "active" as const },
-    { code: "LIRA-01",  displayName: "LIRA",         teamId: coreTeam?.id,    functionId: analystFn?.id,      status: "active" as const },
-    { code: "NARA-01",  displayName: "NARA",         teamId: contentTeam?.id, functionId: writerFn?.id,       status: "active" as const },
-    { code: "CAIO-01",  displayName: "CAIO",         teamId: supportTeam?.id, functionId: supportFn?.id,      status: "active" as const },
-    { code: "EVA-01",   displayName: "EVA",          teamId: coreTeam?.id,    functionId: analystFn?.id,      status: "active" as const },
-    { code: "THOR-01",  displayName: "THOR",         teamId: coreTeam?.id,    functionId: orchestratorFn?.id, status: "active" as const },
-    { code: "MIRA-01",  displayName: "MIRA",         teamId: supportTeam?.id, functionId: supportFn?.id,      status: "active" as const },
-    { code: "ZEUS-01",  displayName: "ZEUS",         teamId: contentTeam?.id, functionId: writerFn?.id,       status: "active" as const },
+    { code: "MILA-01",    displayName: "Mila Castro",       teamId: tid("MARKETING"),   functionId: fid("MKT_MANAGER"),    status: "active" as const },
+    { code: "CHIARA-01",  displayName: "Chiara Garcia",     teamId: tid("TECH"),        functionId: fid("ORCHESTRATOR"),   status: "active" as const },
+    { code: "DAVID-01",   displayName: "David Novaes",      teamId: tid("TECH"),        functionId: fid("SENIOR_DEV"),     status: "active" as const },
+    { code: "LIA-01",     displayName: "Lia Salazar",       teamId: tid("TECH"),        functionId: fid("FRONTEND_SPEC"),  status: "active" as const },
+    { code: "ANAB-01",    displayName: "Ana Beatriz",       teamId: tid("EXEC"),        functionId: fid("EXEC_ASSISTANT"), status: "active" as const },
+    { code: "PRIS-01",    displayName: "Priscila",          teamId: tid("FBR_SUPPORT"), functionId: fid("SECRETARY"),      status: "active" as const },
+    { code: "MAIA-01",    displayName: "Maia Mendes",       teamId: tid("FBR_SALES"),   functionId: fid("SALES_MANAGER"),  status: "active" as const },
+    { code: "LEON-01",    displayName: "Leon Guavamango",   teamId: tid("FBR_RJ"),      functionId: fid("AGENTE"),         status: "active" as const },
+    { code: "CINTHIA-01", displayName: "Cinthia Yamamatsu", teamId: tid("ARVA"),        functionId: fid("AGENTE"),         status: "active" as const },
+    { code: "MARIA-01",   displayName: "Maria Rodrigues",   teamId: tid("ARVA"),        functionId: fid("AGENTE"),         status: "active" as const },
+    { code: "ERICK-01",   displayName: "Erick Moraes",      teamId: tid("ARVA"),        functionId: fid("AGENTE"),         status: "active" as const },
   ];
 
   for (const a of agents) {
@@ -308,14 +313,17 @@ async function main() {
   const agentRecords = await prisma.agent.findMany();
 
   const demoScores: Record<string, number> = {
-    "ARVA-01": 94.5,
-    "LIRA-01": 88.2,
-    "NARA-01": 76.0,
-    "CAIO-01": 91.8,
-    "EVA-01":  67.3,
-    "THOR-01": 98.1,
-    "MIRA-01": 82.5,
-    "ZEUS-01": 59.4,
+    "CHIARA-01": 96.5,
+    "MILA-01":   92.2,
+    "DAVID-01":  88.0,
+    "ANAB-01":   91.8,
+    "MAIA-01":   85.3,
+    "LIA-01":    90.1,
+    "PRIS-01":   79.5,
+    "LEON-01":   68.4,
+    "CINTHIA-01": 84.1,
+    "MARIA-01":   76.5,
+    "ERICK-01":   89.0,
   };
 
   const getBand = (score: number): string => {
