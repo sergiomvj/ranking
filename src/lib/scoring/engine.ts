@@ -16,7 +16,7 @@ export async function processPendingTaskExecutions(periodCode: string) {
   const pendingExecutions = await prisma.taskExecution.findMany({
     where: {
       startedAt: { gte: period.startsAt, lte: period.endsAt },
-      scoreStatus: ScoreStatus.pending,
+      scoreStatus: ScoreStatus.provisional,
     },
   });
 
@@ -28,7 +28,7 @@ export async function processPendingTaskExecutions(periodCode: string) {
     await prisma.taskExecution.update({
       where: { id: exec.id },
       data: {
-        scoreStatus: ScoreStatus.calculated,
+        scoreStatus: ScoreStatus.published,
       },
     });
 
@@ -39,8 +39,8 @@ export async function processPendingTaskExecutions(periodCode: string) {
         data: {
           executionId: exec.id,
           metricId: metric.id,
-          rawScore: randomScore,
-          normalizedScore: randomScore,
+          rawValue: randomScore,
+          normalizedValue: randomScore,
           isOverride: false,
         },
       });
@@ -73,7 +73,7 @@ export async function closeEvaluationPeriod(periodCode: string) {
   const executions = await prisma.taskExecution.findMany({
     where: {
       startedAt: { gte: period.startsAt, lte: period.endsAt },
-      scoreStatus: { in: [ScoreStatus.calculated, ScoreStatus.published] },
+      scoreStatus: { in: [ScoreStatus.provisional, ScoreStatus.published] },
     },
     include: { metricScores: true },
   });
@@ -85,7 +85,7 @@ export async function closeEvaluationPeriod(periodCode: string) {
     if (!exec.agentId) continue;
     let sumMetric = 0;
     if (exec.metricScores.length > 0) {
-      sumMetric = exec.metricScores.map(m => Number(m.normalizedScore)).reduce((a, b) => a + b, 0) / exec.metricScores.length;
+      sumMetric = exec.metricScores.map(m => Number(m.normalizedValue)).reduce((a, b) => a + b, 0) / exec.metricScores.length;
     } else {
       sumMetric = 80; // fallback se não tiver metrics e for calculated
     }

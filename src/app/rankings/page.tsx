@@ -66,8 +66,8 @@ export default async function RankingsPage() {
                   </Link>
                 </TableCell>
                 <TableCell>
-                  <div className="text-sm text-zinc-300">{row.agent?.owningTeam?.name}</div>
-                  <div className="text-xs text-zinc-500">{row.agent?.primaryFunction?.name}</div>
+                  <div className="text-sm text-zinc-300">ID Time: {row.agent?.owningTeamId || "Sem Squad"}</div>
+                  <div className="text-xs text-zinc-500">ID Função: {row.agent?.primaryFunctionId || "Genérica"}</div>
                 </TableCell>
                 <TableCell className="text-center text-zinc-400">
                   {row.sampleSize}

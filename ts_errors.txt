@@ -1,0 +1,29 @@
+src/app/agents/[agentCode]/page.tsx(31,123): error TS2551: Property 'owningTeam' does not exist on type '{ id: string; code: string; description: string | null; createdAt: Date; updatedAt: Date; status: AgentStatus; displayName: string; primaryFunctionId: string | null; owningTeamId: string | null; startedAt: Date | null; endedAt: Date | null; metadata: JsonValue; }'. Did you mean 'owningTeamId'?
+src/app/agents/[agentCode]/page.tsx(32,123): error TS2551: Property 'primaryFunction' does not exist on type '{ id: string; code: string; description: string | null; createdAt: Date; updatedAt: Date; status: AgentStatus; displayName: string; primaryFunctionId: string | null; owningTeamId: string | null; startedAt: Date | null; endedAt: Date | null; metadata: JsonValue; }'. Did you mean 'primaryFunctionId'?
+src/app/agents/[agentCode]/page.tsx(68,75): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'Date | null' is not assignable to parameter of type 'string | number | Date'.
+      Type 'null' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'Date | null' is not assignable to parameter of type 'string | number'.
+      Type 'null' is not assignable to type 'string | number'.
+src/app/agents/[agentCode]/page.tsx(73,31): error TS2367: This comparison appears to be unintentional because the types '"provisional" | "reprocessed" | "revoked"' and '"calculated"' have no overlap.
+src/app/agents/[agentCode]/page.tsx(91,26): error TS2339: Property 'badgesAwarded' does not exist on type '{ id: string; code: string; description: string | null; createdAt: Date; updatedAt: Date; status: AgentStatus; displayName: string; primaryFunctionId: string | null; owningTeamId: string | null; startedAt: Date | null; endedAt: Date | null; metadata: JsonValue; }'.
+src/app/agents/[agentCode]/page.tsx(93,29): error TS2339: Property 'badgesAwarded' does not exist on type '{ id: string; code: string; description: string | null; createdAt: Date; updatedAt: Date; status: AgentStatus; displayName: string; primaryFunctionId: string | null; owningTeamId: string | null; startedAt: Date | null; endedAt: Date | null; metadata: JsonValue; }'.
+src/app/agents/[agentCode]/page.tsx(93,47): error TS7006: Parameter 'bw' implicitly has an 'any' type.
+src/app/agents/[agentCode]/page.tsx(107,26): error TS2339: Property 'consequenceEvents' does not exist on type '{ id: string; code: string; description: string | null; createdAt: Date; updatedAt: Date; status: AgentStatus; displayName: string; primaryFunctionId: string | null; owningTeamId: string | null; startedAt: Date | null; endedAt: Date | null; metadata: JsonValue; }'.
+src/app/agents/[agentCode]/page.tsx(109,29): error TS2339: Property 'consequenceEvents' does not exist on type '{ id: string; code: string; description: string | null; createdAt: Date; updatedAt: Date; status: AgentStatus; displayName: string; primaryFunctionId: string | null; owningTeamId: string | null; startedAt: Date | null; endedAt: Date | null; metadata: JsonValue; }'.
+src/app/agents/[agentCode]/page.tsx(109,51): error TS7006: Parameter 'ce' implicitly has an 'any' type.
+src/lib/actions/dashboard.ts(48,11): error TS18047: 'sc.agent' is possibly 'null'.
+src/lib/actions/dashboard.ts(49,18): error TS18047: 'sc.agent' is possibly 'null'.
+src/lib/actions/dashboard.ts(65,11): error TS18047: 'sc.agent' is possibly 'null'.
+src/lib/actions/dashboard.ts(66,18): error TS18047: 'sc.agent' is possibly 'null'.
+src/lib/actions/rankings.ts(33,20): error TS2353: Object literal may only specify known properties, and 'generatedAt' does not exist in type 'ConsequenceEventOrderByWithRelationInput | ConsequenceEventOrderByWithRelationInput[]'.
+src/lib/actions/rankings.ts(47,20): error TS2353: Object literal may only specify known properties, and 'period' does not exist in type 'PeriodScorecardInclude<DefaultArgs>'.
+src/lib/actions/rankings.ts(53,18): error TS2353: Object literal may only specify known properties, and 'period' does not exist in type 'PeriodScorecardOrderByWithRelationInput | PeriodScorecardOrderByWithRelationInput[]'.
+src/lib/actions/rankings.ts(54,18): error TS2353: Object literal may only specify known properties, and 'period' does not exist in type 'PeriodScorecardInclude<DefaultArgs>'.
+src/lib/scoring/engine.ts(19,32): error TS2339: Property 'pending' does not exist on type '{ provisional: "provisional"; published: "published"; reprocessed: "reprocessed"; revoked: "revoked"; }'.
+src/lib/scoring/engine.ts(31,34): error TS2339: Property 'calculated' does not exist on type '{ provisional: "provisional"; published: "published"; reprocessed: "reprocessed"; revoked: "revoked"; }'.
+src/lib/scoring/engine.ts(42,11): error TS2353: Object literal may only specify known properties, and 'rawScore' does not exist in type 'Without<ExecutionMetricScoreCreateInput, ExecutionMetricScoreUncheckedCreateInput> & ExecutionMetricScoreUncheckedCreateInput'.
+src/lib/scoring/engine.ts(76,39): error TS2339: Property 'calculated' does not exist on type '{ provisional: "provisional"; published: "published"; reprocessed: "reprocessed"; revoked: "revoked"; }'.
+src/lib/scoring/engine.ts(88,55): error TS2339: Property 'normalizedScore' does not exist on type '{ id: string; createdAt: Date; metricId: string; metadata: JsonValue; explanation: string | null; executionId: string; rawValue: Decimal | null; normalizedValue: Decimal | null; appliedWeight: Decimal; weightedPoints: Decimal; metricStatus: string; }'.

@@ -45,8 +45,8 @@ export async function getDashboardOverview(periodCode: string) {
 
   const topAgents = topAgentsScorecards.map((sc) => ({
     id: sc.agentId,
-    code: sc.agent.code,
-    displayName: sc.agent.displayName,
+    code: sc.agent?.code || "",
+    displayName: sc.agent?.displayName || "",
     score: sc.scoreValue,
     rank: sc.rankPosition,
     band: sc.operationalBand,
@@ -62,8 +62,8 @@ export async function getDashboardOverview(periodCode: string) {
   
   const bottomAgents = bottomAgentsScorecards.map((sc) => ({
     id: sc.agentId,
-    code: sc.agent.code,
-    displayName: sc.agent.displayName,
+    code: sc.agent?.code || "",
+    displayName: sc.agent?.displayName || "",
     score: sc.scoreValue,
     rank: sc.rankPosition,
     band: sc.operationalBand,
