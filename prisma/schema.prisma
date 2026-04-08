@@ -251,6 +251,8 @@ model Agent {
   owningTeamId      String?     @db.Uuid
   startedAt         DateTime?   @db.Timestamptz
   endedAt           DateTime?   @db.Timestamptz
+  lastCheckIn       DateTime?   @db.Timestamptz
+  managerNotes      String?     @db.Text
   metadata          Json        @default("{}")
   createdAt         DateTime    @default(now()) @db.Timestamptz
   updatedAt         DateTime    @default(now()) @db.Timestamptz
@@ -268,6 +270,7 @@ model Agent {
   projectTasks        ProjectTask[]
   taskLifecycleEvents TaskLifecycleEvent[]
   projects            Project[]                 @relation("ProjectMembers")
+  sessions            AgentSession[]
 
   @@map("agents")
 }
@@ -957,4 +960,18 @@ model TaskLifecycleEvent {
 
   @@index([taskId, eventType])
   @@map("task_lifecycle_events")
+}
+
+model AgentSession {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  agentId   String   @db.Uuid
+  clockInAt DateTime @default(now()) @db.Timestamptz
+  status    String   @default("active") // active, completed
+  notes     String?  @db.Text // Snapshotted admin notes for audit
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId, clockInAt(sort: Desc)])
+  @@map("agent_sessions")
 }

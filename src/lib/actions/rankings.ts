@@ -6,13 +6,20 @@ export async function getPeriodRankings(periodCode: string) {
     const period = await prisma.evaluationPeriod.findUnique({ where: { code: periodCode } });
     if (!period) return { period: null, rankings: [] };
 
-    const scorecards = await prisma.periodScorecard.findMany({
+    const scorecardsRaw = await prisma.periodScorecard.findMany({
       where: { periodId: period.id },
       orderBy: { rankPosition: "asc" },
       include: { agent: true }
     });
 
-    return { period, rankings: scorecards };
+    const rankings = scorecardsRaw.map(sc => ({
+      ...sc,
+      scoreValue: sc.scoreValue.toNumber(),
+      confidenceIndex: sc.confidenceIndex.toNumber(),
+      trendDelta: sc.trendDelta?.toNumber() || null
+    }));
+
+    return { period, rankings };
   } catch (error) {
     console.error("Database connection failed in rankings:", error);
     return { period: null, rankings: [] };
@@ -50,19 +57,26 @@ export async function getAgentProfile(agentCode: string, periodCode?: string) {
         take: 5
     });
 
-    let scorecard = null;
+    let scorecardRaw = null;
     if (periodCode) {
       const p = await prisma.evaluationPeriod.findUnique({ where: { code: periodCode } });
       if (p) {
-        scorecard = await prisma.periodScorecard.findFirst({
+        scorecardRaw = await prisma.periodScorecard.findFirst({
           where: { agentId: agent.id, periodId: p.id }
         });
       }
     } else {
-      scorecard = await prisma.periodScorecard.findFirst({
+      scorecardRaw = await prisma.periodScorecard.findFirst({
         where: { agentId: agent.id }
       });
     }
+
+    const scorecard = scorecardRaw ? {
+      ...scorecardRaw,
+      scoreValue: scorecardRaw.scoreValue.toNumber(),
+      confidenceIndex: scorecardRaw.confidenceIndex.toNumber(),
+      trendDelta: scorecardRaw.trendDelta?.toNumber() || null
+    } : null;
 
     const recentExecutions = await prisma.taskExecution.findMany({
       where: { agentId: agent.id },

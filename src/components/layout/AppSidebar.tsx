@@ -18,6 +18,7 @@ export function AppSidebar() {
         <NavItem href="/" icon={LayoutDashboard} label="Visão Geral" active />
         <NavItem href="/rankings" icon={Award} label="Rankings e Tiers" />
         <NavItem href="/agents" icon={Users} label="Agentes" />
+        <NavItem href="/task-center" icon={FileText} label="Central de Tarefas" />
         
         <p className="px-4 text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-4 mt-8">Governança</p>
         <NavItem href="/policies" icon={FileText} label="Políticas de Score" />

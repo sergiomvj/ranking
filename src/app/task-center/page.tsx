@@ -1,7 +1,7 @@
-import { getAllProjectsWithTasks } from "./actions";
+import { getAllProjectsWithTasks, deleteProjectAction } from "./actions";
 import { CreateProjectForm } from "./CreateProjectForm";
 import Link from "next/link";
-import { ShieldCheck, Crosshair, CheckCircle2, Clock } from "lucide-react";
+import { ShieldCheck, Crosshair, CheckCircle2, Clock, Trash2 } from "lucide-react";
 
 export const metadata = {
   title: "Central de Tarefas | Agent Efficiency Hub",
@@ -79,12 +79,19 @@ export default async function TaskCenterPage() {
                                    </div>
                                    <p className="text-xs text-zinc-500 line-clamp-1">{p.documentation || "Sem documentação"}</p>
                                </div>
-                               <Link 
-                                   href={`/task-center/project/${p.id}`}
-                                   className="px-3 py-1 bg-white/5 hover:bg-white/10 rounded-full text-xs font-semibold text-white uppercase transition-colors"
-                               >
-                                   Gerenciar {p.status}
-                               </Link>
+                               <div className="flex items-center gap-2">
+                                <Link 
+                                    href={`/task-center/project/${p.id}`}
+                                    className="px-3 py-1 bg-white/5 hover:bg-white/10 rounded-full text-xs font-semibold text-white uppercase transition-colors"
+                                >
+                                    Gerenciar {p.status}
+                                </Link>
+                                <form action={deleteProjectAction.bind(null, p.id)}>
+                                    <button type="submit" className="p-1.5 text-zinc-500 hover:text-rose-400 bg-white/5 hover:bg-rose-500/10 rounded-full transition-colors" title="Deletar Projeto">
+                                      <Trash2 size={16} />
+                                    </button>
+                                </form>
+                               </div>
                            </div>
 
                            <div className="space-y-3 mt-2">

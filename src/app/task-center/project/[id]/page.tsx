@@ -1,8 +1,8 @@
 import { prisma } from "../../../../lib/prisma";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Users, Save, CheckCircle } from "lucide-react";
+import { ArrowLeft, Users, Save, CheckCircle, X } from "lucide-react";
 import Link from "next/link";
-import { updateProjectDocAction, addProjectMemberAction } from "../../actions";
+import { updateProjectDocAction, addProjectMemberAction, removeProjectMemberAction } from "../../actions";
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -74,8 +74,15 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                         <p className="text-sm text-zinc-500">Nenhum membro explícito alocado. Tarefas limitadas a atribuições diretas.</p>
                     ) : (
                         project.members.map(m => (
-                            <div key={m.id} className="flex items-center gap-2 text-sm text-zinc-300 bg-black/40 px-3 py-2 rounded-lg">
-                                <Users size={14} className="text-emerald-500"/> @{m.code}
+                            <div key={m.id} className="flex items-center justify-between text-sm text-zinc-300 bg-black/40 px-3 py-2 rounded-lg group">
+                                <div className="flex items-center gap-2">
+                                    <Users size={14} className="text-emerald-500"/> @{m.code}
+                                </div>
+                                <form action={removeProjectMemberAction.bind(null, project.id, m.id)}>
+                                   <button type="submit" className="opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-rose-400 transition-all p-1" title="Desalocar">
+                                      <X size={14} />
+                                   </button>
+                                </form>
                             </div>
                         ))
                     )}

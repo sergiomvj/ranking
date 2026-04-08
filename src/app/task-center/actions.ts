@@ -51,6 +51,25 @@ export async function addProjectMemberAction(projectId: string, agentId: string)
   revalidatePath(`/task-center/project/${projectId}`);
 }
 
+export async function removeProjectMemberAction(projectId: string, agentId: string) {
+  await prisma.project.update({
+    where: { id: projectId },
+    data: {
+      members: {
+        disconnect: { id: agentId }
+      }
+    }
+  });
+  revalidatePath(`/task-center/project/${projectId}`);
+}
+
+export async function deleteProjectAction(projectId: string) {
+  await prisma.project.delete({
+    where: { id: projectId }
+  });
+  revalidatePath("/task-center");
+}
+
 export async function getAllProjectsWithTasks() {
   return await prisma.project.findMany({
     orderBy: { createdAt: 'desc' },

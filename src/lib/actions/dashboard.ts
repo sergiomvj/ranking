@@ -48,7 +48,7 @@ export async function getDashboardOverview(periodCode: string) {
     id: sc.agentId,
     code: sc.agent?.code || "",
     displayName: sc.agent?.displayName || "",
-    score: sc.scoreValue,
+    score: sc.scoreValue.toNumber(),
     rank: sc.rankPosition,
     band: sc.operationalBand,
   }));
@@ -65,7 +65,7 @@ export async function getDashboardOverview(periodCode: string) {
     id: sc.agentId,
     code: sc.agent?.code || "",
     displayName: sc.agent?.displayName || "",
-    score: sc.scoreValue,
+    score: sc.scoreValue.toNumber(),
     rank: sc.rankPosition,
     band: sc.operationalBand,
   })).reverse(); // Reverse para o pior ficar no final ou manter ordenado? Depende da UI.
