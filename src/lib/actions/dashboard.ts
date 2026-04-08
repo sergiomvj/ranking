@@ -3,7 +3,8 @@
 import { prisma } from "../prisma";
 
 export async function getDashboardOverview(periodCode: string) {
-  const period = await prisma.evaluationPeriod.findUnique({
+  try {
+    const period = await prisma.evaluationPeriod.findUnique({
     where: { code: periodCode },
   });
 
@@ -81,4 +82,8 @@ export async function getDashboardOverview(periodCode: string) {
     topAgents,
     bottomAgents,
   };
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    return null;
+  }
 }
