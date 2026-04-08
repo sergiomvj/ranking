@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
   engineType = "library"
 }
 
@@ -150,45 +150,46 @@ enum AuditEventType {
 // -------------------------------------------------------------
 
 model User {
-  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  externalAuthId String?        @unique
-  email          String         @unique @db.Text
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  externalAuthId String?  @unique
+  email          String   @unique @db.Text
   fullName       String
-  isActive       Boolean        @default(true)
-  createdAt      DateTime       @default(now()) @db.Timestamptz
-  updatedAt      DateTime       @default(now()) @db.Timestamptz
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now()) @db.Timestamptz
+  updatedAt      DateTime @default(now()) @db.Timestamptz
 
-  roles                      UserRole[]
-  ownedPolicies              ScoringPolicy[]
-  createdPolicyVersions      ScoringPolicyVersion[] @relation("CreatedPolicyVersions")
-  publishedPolicyVersions    ScoringPolicyVersion[] @relation("PublishedPolicyVersions")
-  closedPeriods              EvaluationPeriod[]     @relation("ClosedPeriods")
-  generatedRankings          RankingSnapshot[]      @relation("GeneratedRankings")
-  badgeAwardsGiven           BadgeAward[]           @relation("BadgeAwardedBy")
-  createdConsequenceRules    ConsequenceRule[]      @relation("ConsequenceRuleCreatedBy")
-  confirmedConsequences      ConsequenceEvent[]     @relation("ConsequenceConfirmedBy")
-  dismissedConsequences      ConsequenceEvent[]     @relation("ConsequenceDismissedBy")
-  scoreReviewsRequested      ScoreReview[]          @relation("ReviewRequestedBy")
-  scoreReviewsAssigned       ScoreReview[]          @relation("ReviewAssignedTo")
-  scoreReviewsDecided        ScoreReview[]          @relation("ReviewDecidedBy")
-  auditEvents                AuditEvent[]           @relation("AuditActor")
-  dataAccessLogs             DataAccessLog[]
-  exportJobs                 ExportJob[]
+  roles                   UserRole[]
+  ownedPolicies           ScoringPolicy[]
+  createdPolicyVersions   ScoringPolicyVersion[] @relation("CreatedPolicyVersions")
+  publishedPolicyVersions ScoringPolicyVersion[] @relation("PublishedPolicyVersions")
+  closedPeriods           EvaluationPeriod[]     @relation("ClosedPeriods")
+  generatedRankings       RankingSnapshot[]      @relation("GeneratedRankings")
+  badgeAwardsGiven        BadgeAward[]           @relation("BadgeAwardedBy")
+  createdConsequenceRules ConsequenceRule[]      @relation("ConsequenceRuleCreatedBy")
+  confirmedConsequences   ConsequenceEvent[]     @relation("ConsequenceConfirmedBy")
+  dismissedConsequences   ConsequenceEvent[]     @relation("ConsequenceDismissedBy")
+  scoreReviewsRequested   ScoreReview[]          @relation("ReviewRequestedBy")
+  scoreReviewsAssigned    ScoreReview[]          @relation("ReviewAssignedTo")
+  scoreReviewsDecided     ScoreReview[]          @relation("ReviewDecidedBy")
+  auditEvents             AuditEvent[]           @relation("AuditActor")
+  dataAccessLogs          DataAccessLog[]
+  exportJobs              ExportJob[]
+  Project                 Project[]
 
   @@map("app_users")
 }
 
 model UserRole {
-  id         String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId     String       @db.Uuid
+  id         String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId     String      @db.Uuid
   roleCode   AppRoleCode
-  teamId     String?      @db.Uuid
-  functionId String?      @db.Uuid
-  createdAt  DateTime     @default(now()) @db.Timestamptz
+  teamId     String?     @db.Uuid
+  functionId String?     @db.Uuid
+  createdAt  DateTime    @default(now()) @db.Timestamptz
 
-  user       User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  team       Team?            @relation(fields: [teamId], references: [id])
-  function   FunctionCatalog? @relation(fields: [functionId], references: [id])
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team     Team?            @relation(fields: [teamId], references: [id])
+  function FunctionCatalog? @relation(fields: [functionId], references: [id])
 
   @@unique([userId, roleCode, teamId, functionId])
   @@map("app_user_roles")
@@ -207,13 +208,14 @@ model Team {
   createdAt   DateTime @default(now()) @db.Timestamptz
   updatedAt   DateTime @default(now()) @db.Timestamptz
 
-  userRoles               UserRole[]
-  agents                  Agent[]
-  agentTeamAssignments    AgentTeamAssignment[]
-  taskExecutions          TaskExecution[]
-  periodScorecards        PeriodScorecard[]
-  badgeAwards             BadgeAward[]
-  consequenceEvents       ConsequenceEvent[]
+  userRoles            UserRole[]
+  agents               Agent[]
+  agentTeamAssignments AgentTeamAssignment[]
+  taskExecutions       TaskExecution[]
+  periodScorecards     PeriodScorecard[]
+  badgeAwards          BadgeAward[]
+  consequenceEvents    ConsequenceEvent[]
+  ProjectTask          ProjectTask[]
 
   @@map("teams")
 }
@@ -227,42 +229,45 @@ model FunctionCatalog {
   createdAt   DateTime @default(now()) @db.Timestamptz
   updatedAt   DateTime @default(now()) @db.Timestamptz
 
-  userRoles                    UserRole[]
-  agents                       Agent[]
-  agentFunctionAssignments     AgentFunctionAssignment[]
-  policyMetricWeights          ScoringPolicyMetricWeight[]
-  taskExecutions               TaskExecution[]
-  periodScorecards             PeriodScorecard[]
-  badgeAwards                  BadgeAward[]
-  consequenceEvents            ConsequenceEvent[]
+  userRoles                UserRole[]
+  agents                   Agent[]
+  agentFunctionAssignments AgentFunctionAssignment[]
+  policyMetricWeights      ScoringPolicyMetricWeight[]
+  taskExecutions           TaskExecution[]
+  periodScorecards         PeriodScorecard[]
+  badgeAwards              BadgeAward[]
+  consequenceEvents        ConsequenceEvent[]
 
   @@map("functions_catalog")
 }
 
 model Agent {
-  id                String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code              String       @unique
+  id                String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code              String      @unique
   displayName       String
   description       String?
-  status            AgentStatus  @default(draft)
-  primaryFunctionId String?      @db.Uuid
-  owningTeamId      String?      @db.Uuid
-  startedAt         DateTime?    @db.Timestamptz
-  endedAt           DateTime?    @db.Timestamptz
-  metadata          Json         @default("{}")
-  createdAt         DateTime     @default(now()) @db.Timestamptz
-  updatedAt         DateTime     @default(now()) @db.Timestamptz
+  status            AgentStatus @default(draft)
+  primaryFunctionId String?     @db.Uuid
+  owningTeamId      String?     @db.Uuid
+  startedAt         DateTime?   @db.Timestamptz
+  endedAt           DateTime?   @db.Timestamptz
+  metadata          Json        @default("{}")
+  createdAt         DateTime    @default(now()) @db.Timestamptz
+  updatedAt         DateTime    @default(now()) @db.Timestamptz
 
-  primaryFunction   FunctionCatalog? @relation(fields: [primaryFunctionId], references: [id])
-  owningTeam        Team?            @relation(fields: [owningTeamId], references: [id])
+  primaryFunction FunctionCatalog? @relation(fields: [primaryFunctionId], references: [id])
+  owningTeam      Team?            @relation(fields: [owningTeamId], references: [id])
 
-  teamAssignments   AgentTeamAssignment[]
+  teamAssignments     AgentTeamAssignment[]
   functionAssignments AgentFunctionAssignment[]
-  ingestionEvents   IngestionEvent[]
-  taskExecutions    TaskExecution[]
-  periodScorecards  PeriodScorecard[]
-  badgeAwards       BadgeAward[]
-  consequenceEvents ConsequenceEvent[]
+  ingestionEvents     IngestionEvent[]
+  taskExecutions      TaskExecution[]
+  periodScorecards    PeriodScorecard[]
+  badgeAwards         BadgeAward[]
+  consequenceEvents   ConsequenceEvent[]
+  projectTasks        ProjectTask[]
+  taskLifecycleEvents TaskLifecycleEvent[]
+  projects            Project[]                 @relation("ProjectMembers")
 
   @@map("agents")
 }
@@ -276,8 +281,8 @@ model AgentTeamAssignment {
   isCurrent Boolean   @default(true)
   createdAt DateTime  @default(now()) @db.Timestamptz
 
-  agent     Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  team      Team      @relation(fields: [teamId], references: [id])
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  team  Team  @relation(fields: [teamId], references: [id])
 
   @@unique([agentId, teamId, startedAt])
   @@map("agent_team_assignments")
@@ -293,8 +298,8 @@ model AgentFunctionAssignment {
   isCurrent  Boolean   @default(true)
   createdAt  DateTime  @default(now()) @db.Timestamptz
 
-  agent      Agent           @relation(fields: [agentId], references: [id], onDelete: Cascade)
-  function   FunctionCatalog @relation(fields: [functionId], references: [id])
+  agent    Agent           @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  function FunctionCatalog @relation(fields: [functionId], references: [id])
 
   @@unique([agentId, functionId, startedAt])
   @@map("agent_function_assignments")
@@ -315,9 +320,9 @@ model TaskType {
   createdAt          DateTime        @default(now()) @db.Timestamptz
   updatedAt          DateTime        @default(now()) @db.Timestamptz
 
-  policyTaskWeights  ScoringPolicyTaskWeight[]
-  ingestionEvents    IngestionEvent[]
-  taskExecutions     TaskExecution[]
+  policyTaskWeights ScoringPolicyTaskWeight[]
+  ingestionEvents   IngestionEvent[]
+  taskExecutions    TaskExecution[]
 
   @@map("task_types")
 }
@@ -356,36 +361,36 @@ model ScoringPolicy {
   createdAt   DateTime @default(now()) @db.Timestamptz
   updatedAt   DateTime @default(now()) @db.Timestamptz
 
-  owner       User?    @relation(fields: [ownerUserId], references: [id])
-  versions    ScoringPolicyVersion[]
+  owner    User?                  @relation(fields: [ownerUserId], references: [id])
+  versions ScoringPolicyVersion[]
 
   @@map("scoring_policies")
 }
 
 model ScoringPolicyVersion {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  policyId        String   @db.Uuid
-  versionNumber   Int
-  status          String   // draft, published, archived
-  validFrom       DateTime @db.Timestamptz
-  validTo         DateTime? @db.Timestamptz
-  rationale       String?
-  createdByUserId String?  @db.Uuid
-  publishedByUserId String? @db.Uuid
-  publishedAt     DateTime? @db.Timestamptz
-  createdAt       DateTime  @default(now()) @db.Timestamptz
-  updatedAt       DateTime  @default(now()) @db.Timestamptz
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  policyId          String    @db.Uuid
+  versionNumber     Int
+  status            String // draft, published, archived
+  validFrom         DateTime  @db.Timestamptz
+  validTo           DateTime? @db.Timestamptz
+  rationale         String?
+  createdByUserId   String?   @db.Uuid
+  publishedByUserId String?   @db.Uuid
+  publishedAt       DateTime? @db.Timestamptz
+  createdAt         DateTime  @default(now()) @db.Timestamptz
+  updatedAt         DateTime  @default(now()) @db.Timestamptz
 
-  policy          ScoringPolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  createdBy       User?         @relation("CreatedPolicyVersions", fields: [createdByUserId], references: [id])
-  publishedBy     User?         @relation("PublishedPolicyVersions", fields: [publishedByUserId], references: [id])
+  policy      ScoringPolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  createdBy   User?         @relation("CreatedPolicyVersions", fields: [createdByUserId], references: [id])
+  publishedBy User?         @relation("PublishedPolicyVersions", fields: [publishedByUserId], references: [id])
 
-  metricWeights   ScoringPolicyMetricWeight[]
-  thresholds      ScoringPolicyThreshold[]
-  taskWeights     ScoringPolicyTaskWeight[]
-  taskExecutions  TaskExecution[]
+  metricWeights    ScoringPolicyMetricWeight[]
+  thresholds       ScoringPolicyThreshold[]
+  taskWeights      ScoringPolicyTaskWeight[]
+  taskExecutions   TaskExecution[]
   periodScorecards PeriodScorecard[]
-  badgeRules      BadgeRule[]
+  badgeRules       BadgeRule[]
   consequenceRules ConsequenceRule[]
 
   @@unique([policyId, versionNumber])
@@ -402,9 +407,9 @@ model ScoringPolicyMetricWeight {
   capIfMissing    Decimal? @db.Decimal(5, 2)
   createdAt       DateTime @default(now()) @db.Timestamptz
 
-  policyVersion   ScoringPolicyVersion @relation(fields: [policyVersionId], references: [id], onDelete: Cascade)
-  metric          MetricCatalog        @relation(fields: [metricId], references: [id])
-  function        FunctionCatalog?     @relation(fields: [functionId], references: [id])
+  policyVersion ScoringPolicyVersion @relation(fields: [policyVersionId], references: [id], onDelete: Cascade)
+  metric        MetricCatalog        @relation(fields: [metricId], references: [id])
+  function      FunctionCatalog?     @relation(fields: [functionId], references: [id])
 
   @@unique([policyVersionId, metricId, functionId])
   @@map("scoring_policy_metric_weights")
@@ -418,23 +423,23 @@ model ScoringPolicyThreshold {
   description     String?
   createdAt       DateTime @default(now()) @db.Timestamptz
 
-  policyVersion   ScoringPolicyVersion @relation(fields: [policyVersionId], references: [id], onDelete: Cascade)
+  policyVersion ScoringPolicyVersion @relation(fields: [policyVersionId], references: [id], onDelete: Cascade)
 
   @@unique([policyVersionId, thresholdCode])
   @@map("scoring_policy_thresholds")
 }
 
 model ScoringPolicyTaskWeight {
-  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  policyVersionId String          @db.Uuid
-  taskTypeId      String?         @db.Uuid
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  policyVersionId String           @db.Uuid
+  taskTypeId      String?          @db.Uuid
   criticality     TaskCriticality?
   complexity      TaskComplexity?
-  weightFactor    Decimal         @db.Decimal(8, 4)
-  createdAt       DateTime        @default(now()) @db.Timestamptz
+  weightFactor    Decimal          @db.Decimal(8, 4)
+  createdAt       DateTime         @default(now()) @db.Timestamptz
 
-  policyVersion   ScoringPolicyVersion @relation(fields: [policyVersionId], references: [id], onDelete: Cascade)
-  taskType        TaskType?            @relation(fields: [taskTypeId], references: [id])
+  policyVersion ScoringPolicyVersion @relation(fields: [policyVersionId], references: [id], onDelete: Cascade)
+  taskType      TaskType?            @relation(fields: [taskTypeId], references: [id])
 
   @@map("scoring_policy_task_weights")
 }
@@ -444,23 +449,23 @@ model ScoringPolicyTaskWeight {
 // -------------------------------------------------------------
 
 model IngestionEvent {
-  id               String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  sourceSystem     String
-  sourceEventId    String?
-  dedupHash        String               @unique
-  agentId          String?              @db.Uuid
-  taskTypeId       String?              @db.Uuid
-  receivedAt       DateTime             @default(now()) @db.Timestamptz
-  occurredAt       DateTime?            @db.Timestamptz
-  ingestionStatus  EventIngestionStatus @default(received)
-  errorMessage     String?
-  payload          Json
-  metadata         Json                 @default("{}")
-  createdAt        DateTime             @default(now()) @db.Timestamptz
+  id              String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sourceSystem    String
+  sourceEventId   String?
+  dedupHash       String               @unique
+  agentId         String?              @db.Uuid
+  taskTypeId      String?              @db.Uuid
+  receivedAt      DateTime             @default(now()) @db.Timestamptz
+  occurredAt      DateTime?            @db.Timestamptz
+  ingestionStatus EventIngestionStatus @default(received)
+  errorMessage    String?
+  payload         Json
+  metadata        Json                 @default("{}")
+  createdAt       DateTime             @default(now()) @db.Timestamptz
 
-  agent            Agent?               @relation(fields: [agentId], references: [id])
-  taskType         TaskType?            @relation(fields: [taskTypeId], references: [id])
-  taskExecution    TaskExecution?
+  agent         Agent?         @relation(fields: [agentId], references: [id])
+  taskType      TaskType?      @relation(fields: [taskTypeId], references: [id])
+  taskExecution TaskExecution?
 
   @@index([agentId])
   @@index([taskTypeId])
@@ -470,42 +475,42 @@ model IngestionEvent {
 }
 
 model TaskExecution {
-  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  ingestionEventId String?         @unique @db.Uuid
-  agentId          String          @db.Uuid
-  teamId           String?         @db.Uuid
-  functionId       String?         @db.Uuid
-  taskTypeId       String          @db.Uuid
-  policyVersionId  String?         @db.Uuid
+  id                String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  ingestionEventId  String?         @unique @db.Uuid
+  agentId           String          @db.Uuid
+  teamId            String?         @db.Uuid
+  functionId        String?         @db.Uuid
+  taskTypeId        String          @db.Uuid
+  policyVersionId   String?         @db.Uuid
   externalReference String?
-  startedAt        DateTime?       @db.Timestamptz
-  completedAt      DateTime?       @db.Timestamptz
-  criticality      TaskCriticality
-  complexity       TaskComplexity
-  executionStatus  ExecutionStatus @default(pending)
-  confidenceFactor Decimal         @default(1.0000) @db.Decimal(6, 4)
-  penaltyPoints    Decimal         @default(0) @db.Decimal(6, 2)
-  capScore         Decimal?        @db.Decimal(5, 2)
-  scoreRaw         Decimal?        @db.Decimal(5, 2)
-  scoreFinal       Decimal?        @db.Decimal(5, 2)
-  scoreStatus      ScoreStatus     @default(provisional)
-  sampleEligible   Boolean         @default(true)
-  explanation      Json            @default("{}")
-  metadata         Json            @default("{}")
-  createdAt        DateTime        @default(now()) @db.Timestamptz
-  updatedAt        DateTime        @default(now()) @db.Timestamptz
+  startedAt         DateTime?       @db.Timestamptz
+  completedAt       DateTime?       @db.Timestamptz
+  criticality       TaskCriticality
+  complexity        TaskComplexity
+  executionStatus   ExecutionStatus @default(pending)
+  confidenceFactor  Decimal         @default(1.0000) @db.Decimal(6, 4)
+  penaltyPoints     Decimal         @default(0) @db.Decimal(6, 2)
+  capScore          Decimal?        @db.Decimal(5, 2)
+  scoreRaw          Decimal?        @db.Decimal(5, 2)
+  scoreFinal        Decimal?        @db.Decimal(5, 2)
+  scoreStatus       ScoreStatus     @default(provisional)
+  sampleEligible    Boolean         @default(true)
+  explanation       Json            @default("{}")
+  metadata          Json            @default("{}")
+  createdAt         DateTime        @default(now()) @db.Timestamptz
+  updatedAt         DateTime        @default(now()) @db.Timestamptz
 
-  ingestionEvent   IngestionEvent?  @relation(fields: [ingestionEventId], references: [id], onDelete: SetNull)
-  agent            Agent            @relation(fields: [agentId], references: [id])
-  team             Team?            @relation(fields: [teamId], references: [id])
-  function         FunctionCatalog? @relation(fields: [functionId], references: [id])
-  taskType         TaskType         @relation(fields: [taskTypeId], references: [id])
-  policyVersion    ScoringPolicyVersion? @relation(fields: [policyVersionId], references: [id])
+  ingestionEvent IngestionEvent?       @relation(fields: [ingestionEventId], references: [id], onDelete: SetNull)
+  agent          Agent                 @relation(fields: [agentId], references: [id])
+  team           Team?                 @relation(fields: [teamId], references: [id])
+  function       FunctionCatalog?      @relation(fields: [functionId], references: [id])
+  taskType       TaskType              @relation(fields: [taskTypeId], references: [id])
+  policyVersion  ScoringPolicyVersion? @relation(fields: [policyVersionId], references: [id])
 
-  metricScores     ExecutionMetricScore[]
-  evidences        ExecutionEvidence[]
-  penalties        ExecutionPenalty[]
-  scoreReviews     ScoreReview[]
+  metricScores ExecutionMetricScore[]
+  evidences    ExecutionEvidence[]
+  penalties    ExecutionPenalty[]
+  scoreReviews ScoreReview[]
 
   @@index([agentId, completedAt(sort: Desc)])
   @@index([teamId, completedAt(sort: Desc)])
@@ -517,20 +522,20 @@ model TaskExecution {
 }
 
 model ExecutionMetricScore {
-  id               String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  executionId      String        @db.Uuid
-  metricId         String        @db.Uuid
-  rawValue         Decimal?      @db.Decimal(10, 4)
-  normalizedValue  Decimal?      @db.Decimal(10, 4)
-  appliedWeight    Decimal       @default(0) @db.Decimal(8, 4)
-  weightedPoints   Decimal       @default(0) @db.Decimal(10, 4)
-  metricStatus     String        @default("computed") // 'computed', 'missing', 'capped', 'invalidated'
-  explanation      String?
-  metadata         Json          @default("{}")
-  createdAt        DateTime      @default(now()) @db.Timestamptz
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  executionId     String   @db.Uuid
+  metricId        String   @db.Uuid
+  rawValue        Decimal? @db.Decimal(10, 4)
+  normalizedValue Decimal? @db.Decimal(10, 4)
+  appliedWeight   Decimal  @default(0) @db.Decimal(8, 4)
+  weightedPoints  Decimal  @default(0) @db.Decimal(10, 4)
+  metricStatus    String   @default("computed") // 'computed', 'missing', 'capped', 'invalidated'
+  explanation     String?
+  metadata        Json     @default("{}")
+  createdAt       DateTime @default(now()) @db.Timestamptz
 
-  taskExecution    TaskExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
-  metric           MetricCatalog @relation(fields: [metricId], references: [id])
+  taskExecution TaskExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  metric        MetricCatalog @relation(fields: [metricId], references: [id])
 
   @@unique([executionId, metricId])
   @@index([executionId])
@@ -538,31 +543,31 @@ model ExecutionMetricScore {
 }
 
 model ExecutionEvidence {
-  id                  String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  executionId         String          @db.Uuid
-  visibility          VisibilityLayer @default(audit_restricted)
-  evidenceType        String
-  storagePath         String?
-  signedUrlExpiresAt  DateTime?       @db.Timestamptz
-  contentHash         String?
-  metadata            Json            @default("{}")
-  createdAt           DateTime        @default(now()) @db.Timestamptz
+  id                 String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  executionId        String          @db.Uuid
+  visibility         VisibilityLayer @default(audit_restricted)
+  evidenceType       String
+  storagePath        String?
+  signedUrlExpiresAt DateTime?       @db.Timestamptz
+  contentHash        String?
+  metadata           Json            @default("{}")
+  createdAt          DateTime        @default(now()) @db.Timestamptz
 
-  taskExecution       TaskExecution   @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  taskExecution TaskExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
 
   @@index([executionId])
   @@map("execution_evidences")
 }
 
 model ExecutionPenalty {
-  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  executionId    String        @db.Uuid
-  penaltyCode    String
-  penaltyPoints  Decimal       @default(0) @db.Decimal(6, 2)
-  rationale      String?
-  createdAt      DateTime      @default(now()) @db.Timestamptz
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  executionId   String   @db.Uuid
+  penaltyCode   String
+  penaltyPoints Decimal  @default(0) @db.Decimal(6, 2)
+  rationale     String?
+  createdAt     DateTime @default(now()) @db.Timestamptz
 
-  taskExecution  TaskExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+  taskExecution TaskExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
 
   @@index([executionId])
   @@map("execution_penalties")
@@ -573,22 +578,22 @@ model ExecutionPenalty {
 // -------------------------------------------------------------
 
 model EvaluationPeriod {
-  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  code        String     @unique
-  periodType  PeriodType
-  startsAt    DateTime   @db.Timestamptz
-  endsAt      DateTime   @db.Timestamptz
-  isClosed    Boolean    @default(false)
-  closedAt    DateTime?  @db.Timestamptz
-  closedByUserId String? @db.Uuid
-  createdAt   DateTime   @default(now()) @db.Timestamptz
-  updatedAt   DateTime   @default(now()) @db.Timestamptz
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code           String     @unique
+  periodType     PeriodType
+  startsAt       DateTime   @db.Timestamptz
+  endsAt         DateTime   @db.Timestamptz
+  isClosed       Boolean    @default(false)
+  closedAt       DateTime?  @db.Timestamptz
+  closedByUserId String?    @db.Uuid
+  createdAt      DateTime   @default(now()) @db.Timestamptz
+  updatedAt      DateTime   @default(now()) @db.Timestamptz
 
-  closedBy    User?      @relation("ClosedPeriods", fields: [closedByUserId], references: [id])
+  closedBy User? @relation("ClosedPeriods", fields: [closedByUserId], references: [id])
 
-  scorecards  PeriodScorecard[]
-  rankingSnapshots RankingSnapshot[]
-  badgeAwards BadgeAward[]
+  scorecards        PeriodScorecard[]
+  rankingSnapshots  RankingSnapshot[]
+  badgeAwards       BadgeAward[]
   consequenceEvents ConsequenceEvent[]
 
   @@index([periodType, startsAt(sort: Desc)])
@@ -596,37 +601,37 @@ model EvaluationPeriod {
 }
 
 model PeriodScorecard {
-  id                 String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  periodId           String      @db.Uuid
-  agentId            String?     @db.Uuid
-  teamId             String?     @db.Uuid
-  functionId         String?     @db.Uuid
-  policyVersionId    String      @db.Uuid
-  scoreValue         Decimal     @db.Decimal(5, 2)
-  scoreStatus        ScoreStatus @default(provisional)
-  sampleSize         Int         @default(0)
-  eligibleTaskCount  Int         @default(0)
-  confidenceIndex    Decimal     @default(1.0000) @db.Decimal(6, 4)
-  rankPosition       Int?
+  id                   String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  periodId             String      @db.Uuid
+  agentId              String?     @db.Uuid
+  teamId               String?     @db.Uuid
+  functionId           String?     @db.Uuid
+  policyVersionId      String      @db.Uuid
+  scoreValue           Decimal     @db.Decimal(5, 2)
+  scoreStatus          ScoreStatus @default(provisional)
+  sampleSize           Int         @default(0)
+  eligibleTaskCount    Int         @default(0)
+  confidenceIndex      Decimal     @default(1.0000) @db.Decimal(6, 4)
+  rankPosition         Int?
   previousRankPosition Int?
-  trendDelta         Decimal?    @db.Decimal(6, 2)
-  operationalBand    String      // 'green', 'yellow', 'orange', 'red'
-  explanation        Json        @default("{}")
-  publishedAt        DateTime?   @db.Timestamptz
-  publicationVersion Int         @default(1)
-  createdAt          DateTime    @default(now()) @db.Timestamptz
-  updatedAt          DateTime    @default(now()) @db.Timestamptz
+  trendDelta           Decimal?    @db.Decimal(6, 2)
+  operationalBand      String // 'green', 'yellow', 'orange', 'red'
+  explanation          Json        @default("{}")
+  publishedAt          DateTime?   @db.Timestamptz
+  publicationVersion   Int         @default(1)
+  createdAt            DateTime    @default(now()) @db.Timestamptz
+  updatedAt            DateTime    @default(now()) @db.Timestamptz
 
-  evaluationPeriod   EvaluationPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
-  agent              Agent?           @relation(fields: [agentId], references: [id])
-  team               Team?            @relation(fields: [teamId], references: [id])
-  function           FunctionCatalog? @relation(fields: [functionId], references: [id])
-  policyVersion      ScoringPolicyVersion @relation(fields: [policyVersionId], references: [id])
+  evaluationPeriod EvaluationPeriod     @relation(fields: [periodId], references: [id], onDelete: Cascade)
+  agent            Agent?               @relation(fields: [agentId], references: [id])
+  team             Team?                @relation(fields: [teamId], references: [id])
+  function         FunctionCatalog?     @relation(fields: [functionId], references: [id])
+  policyVersion    ScoringPolicyVersion @relation(fields: [policyVersionId], references: [id])
 
-  dimensions         PeriodScorecardDimension[]
-  badgeAwardsGiven   BadgeAward[]
-  consequenceEvents  ConsequenceEvent[]
-  scoreReviews       ScoreReview[]
+  dimensions        PeriodScorecardDimension[]
+  badgeAwardsGiven  BadgeAward[]
+  consequenceEvents ConsequenceEvent[]
+  scoreReviews      ScoreReview[]
 
   @@unique([periodId, agentId, publicationVersion])
   @@unique([periodId, teamId, publicationVersion])
@@ -635,34 +640,34 @@ model PeriodScorecard {
 }
 
 model PeriodScorecardDimension {
-  id             String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  scorecardId    String          @db.Uuid
-  metricId       String          @db.Uuid
-  averageScore   Decimal         @db.Decimal(5, 2)
-  appliedWeight  Decimal         @db.Decimal(8, 4)
-  explanation    String?
-  createdAt      DateTime        @default(now()) @db.Timestamptz
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  scorecardId   String   @db.Uuid
+  metricId      String   @db.Uuid
+  averageScore  Decimal  @db.Decimal(5, 2)
+  appliedWeight Decimal  @db.Decimal(8, 4)
+  explanation   String?
+  createdAt     DateTime @default(now()) @db.Timestamptz
 
-  scorecard      PeriodScorecard @relation(fields: [scorecardId], references: [id], onDelete: Cascade)
-  metric         MetricCatalog   @relation(fields: [metricId], references: [id])
+  scorecard PeriodScorecard @relation(fields: [scorecardId], references: [id], onDelete: Cascade)
+  metric    MetricCatalog   @relation(fields: [metricId], references: [id])
 
   @@unique([scorecardId, metricId])
   @@map("period_scorecard_dimensions")
 }
 
 model RankingSnapshot {
-  id                 String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  periodId           String           @db.Uuid
-  scopeType          String           // 'agent', 'team', 'function', 'organization'
-  visibility         VisibilityLayer  @default(internal_wide)
+  id                 String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  periodId           String          @db.Uuid
+  scopeType          String // 'agent', 'team', 'function', 'organization'
+  visibility         VisibilityLayer @default(internal_wide)
   publicationVersion Int
-  generatedAt        DateTime         @default(now()) @db.Timestamptz
-  generatedByUserId  String?          @db.Uuid
+  generatedAt        DateTime        @default(now()) @db.Timestamptz
+  generatedByUserId  String?         @db.Uuid
   storagePath        String?
-  metadata           Json             @default("{}")
+  metadata           Json            @default("{}")
 
-  period             EvaluationPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
-  generatedBy        User?            @relation("GeneratedRankings", fields: [generatedByUserId], references: [id])
+  period      EvaluationPeriod @relation(fields: [periodId], references: [id], onDelete: Cascade)
+  generatedBy User?            @relation("GeneratedRankings", fields: [generatedByUserId], references: [id])
 
   @@index([periodId, scopeType, publicationVersion(sort: Desc)])
   @@map("ranking_snapshots")
@@ -684,51 +689,51 @@ model BadgeCatalog {
   createdAt                  DateTime        @default(now()) @db.Timestamptz
   updatedAt                  DateTime        @default(now()) @db.Timestamptz
 
-  rules                      BadgeRule[]
-  awards                     BadgeAward[]
+  rules  BadgeRule[]
+  awards BadgeAward[]
 
   @@map("badges_catalog")
 }
 
 model BadgeRule {
-  id              String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  badgeId         String                @db.Uuid
-  policyVersionId String?               @db.Uuid
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  badgeId         String    @db.Uuid
+  policyVersionId String?   @db.Uuid
   ruleExpression  Json
-  validFrom       DateTime              @default(now()) @db.Timestamptz
-  validTo         DateTime?             @db.Timestamptz
-  createdByUserId String?               @db.Uuid
-  createdAt       DateTime              @default(now()) @db.Timestamptz
+  validFrom       DateTime  @default(now()) @db.Timestamptz
+  validTo         DateTime? @db.Timestamptz
+  createdByUserId String?   @db.Uuid
+  createdAt       DateTime  @default(now()) @db.Timestamptz
 
-  badge           BadgeCatalog          @relation(fields: [badgeId], references: [id], onDelete: Cascade)
-  policyVersion   ScoringPolicyVersion? @relation(fields: [policyVersionId], references: [id])
+  badge         BadgeCatalog          @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  policyVersion ScoringPolicyVersion? @relation(fields: [policyVersionId], references: [id])
 
   @@map("badge_rules")
 }
 
 model BadgeAward {
-  id                String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  badgeId           String            @db.Uuid
-  agentId           String?           @db.Uuid
-  teamId            String?           @db.Uuid
-  functionId        String?           @db.Uuid
-  periodId          String?           @db.Uuid
-  awardedByUserId   String?           @db.Uuid
-  sourceScorecardId String?           @db.Uuid
-  awardStatus       BadgeAwardStatus  @default(active)
-  awardedAt         DateTime          @default(now()) @db.Timestamptz
-  revokedAt         DateTime?         @db.Timestamptz
+  id                String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  badgeId           String           @db.Uuid
+  agentId           String?          @db.Uuid
+  teamId            String?          @db.Uuid
+  functionId        String?          @db.Uuid
+  periodId          String?          @db.Uuid
+  awardedByUserId   String?          @db.Uuid
+  sourceScorecardId String?          @db.Uuid
+  awardStatus       BadgeAwardStatus @default(active)
+  awardedAt         DateTime         @default(now()) @db.Timestamptz
+  revokedAt         DateTime?        @db.Timestamptz
   revokeReason      String?
-  evidence          Json              @default("{}")
-  createdAt         DateTime          @default(now()) @db.Timestamptz
+  evidence          Json             @default("{}")
+  createdAt         DateTime         @default(now()) @db.Timestamptz
 
-  badge             BadgeCatalog      @relation(fields: [badgeId], references: [id])
-  agent             Agent?            @relation(fields: [agentId], references: [id])
-  team              Team?             @relation(fields: [teamId], references: [id])
-  function          FunctionCatalog?  @relation(fields: [functionId], references: [id])
-  period            EvaluationPeriod? @relation(fields: [periodId], references: [id])
-  awardedBy         User?             @relation("BadgeAwardedBy", fields: [awardedByUserId], references: [id])
-  scorecard         PeriodScorecard?  @relation(fields: [sourceScorecardId], references: [id])
+  badge     BadgeCatalog      @relation(fields: [badgeId], references: [id])
+  agent     Agent?            @relation(fields: [agentId], references: [id])
+  team      Team?             @relation(fields: [teamId], references: [id])
+  function  FunctionCatalog?  @relation(fields: [functionId], references: [id])
+  period    EvaluationPeriod? @relation(fields: [periodId], references: [id])
+  awardedBy User?             @relation("BadgeAwardedBy", fields: [awardedByUserId], references: [id])
+  scorecard PeriodScorecard?  @relation(fields: [sourceScorecardId], references: [id])
 
   @@index([agentId, awardedAt(sort: Desc)])
   @@index([teamId, awardedAt(sort: Desc)])
@@ -754,9 +759,9 @@ model ConsequenceRule {
   createdAt                 DateTime              @default(now()) @db.Timestamptz
   updatedAt                 DateTime              @default(now()) @db.Timestamptz
 
-  policyVersion             ScoringPolicyVersion? @relation(fields: [policyVersionId], references: [id])
-  createdBy                 User?                 @relation("ConsequenceRuleCreatedBy", fields: [createdByUserId], references: [id])
-  events                    ConsequenceEvent[]
+  policyVersion ScoringPolicyVersion? @relation(fields: [policyVersionId], references: [id])
+  createdBy     User?                 @relation("ConsequenceRuleCreatedBy", fields: [createdByUserId], references: [id])
+  events        ConsequenceEvent[]
 
   @@map("consequence_rules")
 }
@@ -779,14 +784,14 @@ model ConsequenceEvent {
   payload           Json              @default("{}")
   createdAt         DateTime          @default(now()) @db.Timestamptz
 
-  rule              ConsequenceRule   @relation(fields: [ruleId], references: [id])
-  agent             Agent?            @relation(fields: [agentId], references: [id])
-  team              Team?             @relation(fields: [teamId], references: [id])
-  function          FunctionCatalog?  @relation(fields: [functionId], references: [id])
-  period            EvaluationPeriod? @relation(fields: [periodId], references: [id])
-  scorecard         PeriodScorecard?  @relation(fields: [sourceScorecardId], references: [id])
-  confirmedBy       User?             @relation("ConsequenceConfirmedBy", fields: [confirmedByUserId], references: [id])
-  dismissedBy       User?             @relation("ConsequenceDismissedBy", fields: [dismissedByUserId], references: [id])
+  rule        ConsequenceRule   @relation(fields: [ruleId], references: [id])
+  agent       Agent?            @relation(fields: [agentId], references: [id])
+  team        Team?             @relation(fields: [teamId], references: [id])
+  function    FunctionCatalog?  @relation(fields: [functionId], references: [id])
+  period      EvaluationPeriod? @relation(fields: [periodId], references: [id])
+  scorecard   PeriodScorecard?  @relation(fields: [sourceScorecardId], references: [id])
+  confirmedBy User?             @relation("ConsequenceConfirmedBy", fields: [confirmedByUserId], references: [id])
+  dismissedBy User?             @relation("ConsequenceDismissedBy", fields: [dismissedByUserId], references: [id])
 
   @@index([agentId, triggeredAt(sort: Desc)])
   @@map("consequence_events")
@@ -816,11 +821,11 @@ model ScoreReview {
   createdAt         DateTime            @default(now()) @db.Timestamptz
   updatedAt         DateTime            @default(now()) @db.Timestamptz
 
-  execution         TaskExecution?      @relation(fields: [executionId], references: [id])
-  scorecard         PeriodScorecard?    @relation(fields: [scorecardId], references: [id])
-  requestedBy       User                @relation("ReviewRequestedBy", fields: [requestedByUserId], references: [id])
-  assignedTo        User?               @relation("ReviewAssignedTo", fields: [assignedToUserId], references: [id])
-  decidedBy         User?               @relation("ReviewDecidedBy", fields: [decidedByUserId], references: [id])
+  execution   TaskExecution?   @relation(fields: [executionId], references: [id])
+  scorecard   PeriodScorecard? @relation(fields: [scorecardId], references: [id])
+  requestedBy User             @relation("ReviewRequestedBy", fields: [requestedByUserId], references: [id])
+  assignedTo  User?            @relation("ReviewAssignedTo", fields: [assignedToUserId], references: [id])
+  decidedBy   User?            @relation("ReviewDecidedBy", fields: [decidedByUserId], references: [id])
 
   @@index([reviewStatus, requestedAt(sort: Desc)])
   @@map("score_reviews")
@@ -845,7 +850,7 @@ model AuditEvent {
   rationale        String?
   metadata         Json            @default("{}")
 
-  actor            User?           @relation("AuditActor", fields: [actorUserId], references: [id])
+  actor User? @relation("AuditActor", fields: [actorUserId], references: [id])
 
   @@index([targetTable, targetId, eventTimestamp(sort: Desc)])
   @@index([actorUserId, eventTimestamp(sort: Desc)])
@@ -862,7 +867,7 @@ model DataAccessLog {
   accessedAt         DateTime        @default(now()) @db.Timestamptz
   metadata           Json            @default("{}")
 
-  user               User            @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@index([userId, accessedAt(sort: Desc)])
   @@map("data_access_logs")
@@ -877,13 +882,79 @@ model ExportJob {
   requestedByUserId String          @db.Uuid
   visibility        VisibilityLayer
   queryContext      Json            @default("{}")
-  status            String          // 'pending', 'processing', 'completed', 'failed'
+  status            String // 'pending', 'processing', 'completed', 'failed'
   storagePath       String?
   expiresAt         DateTime?       @db.Timestamptz
   createdAt         DateTime        @default(now()) @db.Timestamptz
   completedAt       DateTime?       @db.Timestamptz
 
-  requestedBy       User            @relation(fields: [requestedByUserId], references: [id])
+  requestedBy User @relation(fields: [requestedByUserId], references: [id])
 
   @@map("export_jobs")
+}
+
+// -------------------------------------------------------------
+// TASK CENTER (PRE-EXECUTION BACKLOG)
+// -------------------------------------------------------------
+
+model Project {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code            String   @unique
+  name            String
+  description     String?
+  documentation   String?  @db.Text
+  status          String   @default("draft") // draft, active, finished, archived
+  createdByUserId String?  @db.Uuid
+  createdAt       DateTime @default(now()) @db.Timestamptz
+  updatedAt       DateTime @default(now()) @db.Timestamptz
+
+  createdBy User?         @relation(fields: [createdByUserId], references: [id])
+  tasks     ProjectTask[]
+  members   Agent[]       @relation("ProjectMembers")
+
+  @@map("projects")
+}
+
+model ProjectTask {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId       String          @db.Uuid
+  title           String
+  description     String?         @db.Text
+  status          String          @default("backlog") // backlog, assigned, in_progress, blocked, completed
+  criticality     TaskCriticality @default(medium)
+  complexity      TaskComplexity  @default(standard)
+  assignedAgentId String?         @db.Uuid
+  assignedTeamId  String?         @db.Uuid
+  dependencyId    String?         @db.Uuid // Tarefa da qual esta depende
+  sequence        Int             @default(0) // Ordem de execução se aplicável
+  createdAt       DateTime        @default(now()) @db.Timestamptz
+  updatedAt       DateTime        @default(now()) @db.Timestamptz
+
+  project        Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignedAgent  Agent?        @relation(fields: [assignedAgentId], references: [id])
+  assignedTeam   Team?         @relation(fields: [assignedTeamId], references: [id])
+  dependencyTask ProjectTask?  @relation("TaskDependencies", fields: [dependencyId], references: [id])
+  dependentTasks ProjectTask[] @relation("TaskDependencies")
+
+  lifecycleEvents TaskLifecycleEvent[]
+
+  @@index([projectId, status])
+  @@index([assignedAgentId, status])
+  @@map("project_tasks")
+}
+
+model TaskLifecycleEvent {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  taskId    String   @db.Uuid
+  agentId   String?  @db.Uuid
+  eventType String // 'assigned', 'accepted_by_agent', 'issue_reported', 'finished'
+  notes     String?  @db.Text
+  payload   Json     @default("{}")
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  task  ProjectTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  agent Agent?      @relation(fields: [agentId], references: [id])
+
+  @@index([taskId, eventType])
+  @@map("task_lifecycle_events")
 }
