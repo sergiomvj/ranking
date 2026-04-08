@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "../../lib/prisma";
 import { injectTasksIntoProject } from "../../lib/tasks/markdownParser";
+import { dispatchToOpenClawSprint } from "../../lib/integrations/openclaw";
 
 export async function createProjectAction(formData: FormData) {
   const name = formData.get("name") as string;
@@ -26,6 +27,9 @@ export async function createProjectAction(formData: FormData) {
   });
 
   await injectTasksIntoProject(project.id, tasklist);
+
+  // Hook Transacional: Despacha para o OpenClaw via API nativa deles
+  await dispatchToOpenClawSprint(project.id);
 
   revalidatePath("/task-center");
 }

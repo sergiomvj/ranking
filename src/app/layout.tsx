@@ -17,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`dark ${inter.variable} h-full antialiased`}>
-      <body className="font-sans min-h-screen bg-[#060606] text-zinc-100 flex overflow-hidden selection:bg-emerald-500/30">
+    <html lang="pt-BR" className={`dark ${inter.variable} h-full antialiased`} suppressHydrationWarning>
+      <body className="font-sans min-h-screen bg-[#060606] text-zinc-100 flex overflow-hidden selection:bg-emerald-500/30" suppressHydrationWarning>
         <AppSidebar />
         <div className="flex-1 md:ml-64 flex flex-col h-screen relative bg-black/40">
           <div className="absolute top-0 right-0 w-[800px] h-[500px] bg-gradient-to-bl from-emerald-500/20 via-cyan-500/5 to-transparent pointer-events-none -z-10 blur-[120px] opacity-60 rounded-full" />
