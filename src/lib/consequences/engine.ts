@@ -43,11 +43,11 @@ export async function processPeriodConsequences(periodCode: string) {
     // 1. Avalia Consequências Disciplinares ou de Promoção
     for (const rule of consequenceRules) {
       const expr = rule.triggerExpression as any;
-      if (expr?.field === "period_score" && evaluateCondition(expr, card.scoreValue)) {
+      if (expr?.field === "period_score" && evaluateCondition(expr, Number(card.scoreValue))) {
         
         // Evita duplicatas
         const existingInfo = await prisma.consequenceEvent.findFirst({
-          where: { periodId: period.id, agentId: card.agentId, consequenceRuleId: rule.id }
+          where: { periodId: period.id, agentId: card.agentId, ruleId: rule.id }
         });
 
         if (!existingInfo) {
@@ -55,11 +55,11 @@ export async function processPeriodConsequences(periodCode: string) {
             data: {
               periodId: period.id,
               agentId: card.agentId,
-              consequenceRuleId: rule.id,
-              status: rule.requiresHumanConfirmation ? ConsequenceStatus.pending_review : ConsequenceStatus.applied,
-              generatedAt: new Date(),
-              metadata: { sourceScore: card.scoreValue },
-            }
+              ruleId: rule.id,
+              status: rule.requiresHumanConfirmation ? ConsequenceStatus.suggested : ConsequenceStatus.applied,
+              triggeredAt: new Date(),
+              payload: { sourceScore: Number(card.scoreValue) },
+            } as any
           });
           consequencesGenerated++;
         }
@@ -70,10 +70,10 @@ export async function processPeriodConsequences(periodCode: string) {
     for (const bRule of badgeRules) {
       const expr = bRule.ruleExpression as any;
       
-      if (expr?.type === "score_threshold" && expr?.field === "period_score" && evaluateCondition(expr, card.scoreValue)) {
+      if (expr?.type === "score_threshold" && expr?.field === "period_score" && evaluateCondition(expr, Number(card.scoreValue))) {
         
         const existingBadge = await prisma.badgeAward.findFirst({
-          where: { awardedPeriodId: period.id, agentId: card.agentId, badgeId: bRule.badgeId }
+          where: { periodId: period.id, agentId: card.agentId, badgeId: bRule.badgeId }
         });
 
         if (!existingBadge) {
@@ -81,8 +81,8 @@ export async function processPeriodConsequences(periodCode: string) {
             data: {
               agentId: card.agentId,
               badgeId: bRule.badgeId,
-              awardedPeriodId: period.id,
-              status: bRule.badge.isManualValidationRequired ? BadgeAwardStatus.pending_validation : BadgeAwardStatus.granted,
+              periodId: period.id,
+              awardStatus: BadgeAwardStatus.active,
               awardedAt: new Date(),
             }
           });
