@@ -34,7 +34,7 @@ export async function processTaskIngestion(data: IngestionPayload) {
   const agent = await prisma.agent.findUnique({ where: { code: data.agentCode } });
   const taskType = await prisma.taskType.findUnique({ where: { code: data.taskTypeCode } });
 
-  let ingestionStatus = EventIngestionStatus.received;
+  let ingestionStatus: EventIngestionStatus = EventIngestionStatus.received;
   let errorMessage = null;
 
   if (!agent) {
