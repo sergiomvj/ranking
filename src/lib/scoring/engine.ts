@@ -41,7 +41,6 @@ export async function processPendingTaskExecutions(periodCode: string) {
           metricId: metric.id,
           rawValue: randomScore,
           normalizedValue: randomScore,
-          isOverride: false,
         },
       });
     }
