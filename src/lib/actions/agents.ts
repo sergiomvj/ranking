@@ -28,16 +28,24 @@ export async function getAllAgents() {
  * Sincroniza a lista de agentes do banco com a configuração OPENCLAW_AGENTS.
  */
 export async function syncAgentsAction() {
+  console.log("[Sync] Iniciando sincronização manual de agentes...");
   try {
     const results: { code: string; action: "created" | "skipped" }[] = [];
 
     for (const agentData of OPENCLAW_AGENTS) {
-      const existing = await prisma.agent.findUnique({ where: { code: agentData.code } });
+      const normalizedCode = agentData.code.toLowerCase();
+      // Busca case-insensitive simulada garantindo o match correto no banco
+      const existing = await prisma.agent.findFirst({ 
+        where: { 
+          code: { equals: normalizedCode, mode: 'insensitive' } 
+        } 
+      });
 
       if (!existing) {
+        console.log(`[Sync] Criando novo agente: ${normalizedCode}`);
         await prisma.agent.create({
           data: {
-            code: agentData.code,
+            code: normalizedCode,
             displayName: agentData.displayName,
             status: "active",
             metadata: { 
@@ -46,22 +54,29 @@ export async function syncAgentsAction() {
             },
           }
         });
-        results.push({ code: agentData.code, action: "created" });
+        results.push({ code: normalizedCode, action: "created" });
       } else {
-        results.push({ code: agentData.code, action: "skipped" });
+        console.log(`[Sync] Agente já existe: ${normalizedCode} (ID: ${existing.id})`);
+        results.push({ code: normalizedCode, action: "skipped" });
       }
     }
 
+    console.log(`[Sync] Resultado: ${results.filter(r => r.action === "created").length} criados, ${results.filter(r => r.action === "skipped").length} ignorados.`);
+
     revalidatePath("/agents");
     revalidatePath("/rankings");
+    revalidatePath("/");
     
     return {
       ok: true,
       created: results.filter(r => r.action === "created").length,
       skipped: results.filter(r => r.action === "skipped").length,
     };
-  } catch (error) {
-    console.error("Sync failed:", error);
-    return { ok: false, error: "Falha na sincronização com o banco de dados." };
+  } catch (error: any) {
+    console.error("[Sync] Erro crítico na sincronização:", error);
+    return { 
+      ok: false, 
+      error: `Falha técnica: ${error.message || "Erro desconhecido no banco de dados"}` 
+    };
   }
 }

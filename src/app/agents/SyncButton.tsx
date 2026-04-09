@@ -7,20 +7,28 @@ import { syncAgentsAction } from "@/lib/actions/agents";
 export function SyncButton() {
   const [isPending, startTransition] = useTransition();
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [counts, setCounts] = useState<{ created: number; skipped: number } | null>(null);
 
   const handleSync = () => {
     setStatus("idle");
+    setErrorMessage(null);
     startTransition(async () => {
-      const result = await syncAgentsAction();
-      if (result.ok) {
-        setStatus("success");
-        setCounts({ created: result.created!, skipped: result.skipped! });
-        
-        // Reset status after 5 seconds
-        setTimeout(() => setStatus("idle"), 5000);
-      } else {
+      try {
+        const result = await syncAgentsAction();
+        if (result.ok) {
+          setStatus("success");
+          setCounts({ created: result.created!, skipped: result.skipped! });
+          
+          // Reset status after 8 seconds to allow reading
+          setTimeout(() => setStatus("idle"), 8000);
+        } else {
+          setStatus("error");
+          setErrorMessage(result.error || "Erro desconhecido");
+        }
+      } catch (err: any) {
         setStatus("error");
+        setErrorMessage(err.message || "Falha na comunicação com o servidor");
       }
     });
   };
@@ -52,8 +60,16 @@ export function SyncButton() {
       </button>
 
       {status === "success" && counts && (
-        <p className="text-[10px] font-mono text-emerald-500/70 uppercase tracking-widest animate-in fade-in slide-in-from-top-1">
-          +{counts.created} novos · {counts.skipped} ignorados
+        <p className="text-[10px] font-mono text-emerald-500/70 uppercase tracking-widest animate-in fade-in slide-in-from-top-1 text-right">
+          {counts.created > 0 
+            ? `+${counts.created} novos · ${counts.skipped} ignorados` 
+            : `Todos os ${counts.skipped} agentes já sincronizados`}
+        </p>
+      )}
+
+      {status === "error" && errorMessage && (
+        <p className="text-[10px] font-mono text-rose-500/80 uppercase tracking-widest animate-in fade-in slide-in-from-top-1 text-right max-w-[200px]">
+          {errorMessage}
         </p>
       )}
     </div>
