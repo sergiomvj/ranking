@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { Brain } from "lucide-react";
 import { OracleTabs } from "./OracleClient";
 import { getRecommendations } from "@/lib/integrations/oracle";

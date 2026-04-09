@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getDashboardOverview } from "@/lib/actions/dashboard";
 import { Users, Activity, Target, Trophy, AlertTriangle, ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
 

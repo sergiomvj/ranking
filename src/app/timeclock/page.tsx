@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getAllAgentsWithSessions, updateManagerNotesAction } from "./actions";
 import { Clock, MessageSquareQuote, CheckCircle, Save } from "lucide-react";
 

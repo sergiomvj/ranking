@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getPeriodRankings } from "@/lib/actions/rankings";
 import { Trophy, ShieldCheck, ChevronRight } from "lucide-react";
 import Link from "next/link";

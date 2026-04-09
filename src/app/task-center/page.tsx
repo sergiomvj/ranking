@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getAllProjectsWithTasks, deleteProjectAction } from "./actions";
 import { CreateProjectForm } from "./CreateProjectForm";
 import Link from "next/link";
