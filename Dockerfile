@@ -64,5 +64,5 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Run migrations then start the server
-CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
+# Run migrations (non-fatal) then always start the server
+CMD ["sh", "-c", "npx prisma migrate deploy || echo '[WARN] Migration failed - server still starting'; node server.js"]
