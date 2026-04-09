@@ -147,7 +147,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
                                 </span>
                                 <h4 className="font-bold text-white text-lg">{task.title}</h4>
                             </div>
-                            <p className="text-xs text-zinc-500 line-clamp-1 italic">{task.priority ? `Prioridade: ${task.priority}` : 'Prioridade padrão'}</p>
+                            <p className="text-xs text-zinc-500 line-clamp-1 italic">{task.criticality ? `Criticidade: ${task.criticality}` : 'Criticidade padrão'}</p>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-4">
