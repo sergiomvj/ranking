@@ -2,6 +2,7 @@
 
 import { prisma } from "../prisma";
 import { OPENCLAW_AGENTS } from "../config/agents";
+import { fetchOpenClawAgents } from "../integrations/openclaw";
 import { serializePrisma } from "../utils/serialization";
 import { revalidatePath } from "next/cache";
 
@@ -28,11 +29,17 @@ export async function getAllAgents() {
  * Sincroniza a lista de agentes do banco com a configuração OPENCLAW_AGENTS.
  */
 export async function syncAgentsAction() {
-  console.log("[Sync] Iniciando sincronização manual de agentes...");
+  console.log("[Sync] Iniciando sincronização dinâmica de agentes...");
   try {
     const results: { code: string; action: "created" | "skipped" }[] = [];
 
-    for (const agentData of OPENCLAW_AGENTS) {
+    // Tenta buscar da API, mas mantém o static como fallback de segurança
+    const apiAgents = await fetchOpenClawAgents();
+    const sourceAgents = apiAgents || OPENCLAW_AGENTS;
+
+    console.log(`[Sync] Fonte de dados: ${apiAgents ? "API Dinâmica" : "Lista Estática (Fallback)"}`);
+
+    for (const agentData of sourceAgents) {
       const normalizedCode = agentData.code.toLowerCase();
       // Busca case-insensitive simulada garantindo o match correto no banco
       const existing = await prisma.agent.findFirst({ 

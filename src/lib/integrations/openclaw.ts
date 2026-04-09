@@ -72,3 +72,36 @@ export async function dispatchToOpenClawSprint(projectId: string) {
          console.error("[OpenClaw Hub] Falha Crítica ao contatar Servidor Master do OpenClaw:", e);
     }
 }
+
+/**
+ * Busca a lista de agentes dinamicamente da API do OpenClaw.
+ */
+export async function fetchOpenClawAgents() {
+    const apiKey = process.env.OPENCLAW_API_KEY;
+    const baseUrl = process.env.OPENCLAW_BASE_URL || "https://dashboard.fbrapps.com";
+
+    if (!apiKey) {
+        console.warn("[OpenClaw Hub] API Key não detectada para busca de agentes.");
+        return null;
+    }
+
+    try {
+        const response = await fetch(`${baseUrl}/api/agents`, {
+            headers: {
+                "Authorization": `ApiKey ${apiKey}`,
+                "Accept": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            console.error(`[OpenClaw Hub] Erro ao buscar agentes. Status: ${response.status}`);
+            return null;
+        }
+
+        const data = await response.json();
+        return Array.isArray(data) ? data : (data.agents || null);
+    } catch (e) {
+        console.error("[OpenClaw Hub] Falha ao conectar para buscar lista de agentes:", e);
+        return null;
+    }
+}
