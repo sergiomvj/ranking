@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Users, ShieldAlert, Award, FileText, Clock } from "lucide-react";
+import { LayoutDashboard, Users, ShieldAlert, Award, FileText, Clock, Brain } from "lucide-react";
 
 export function AppSidebar() {
   return (
@@ -20,6 +20,7 @@ export function AppSidebar() {
         <NavItem href="/agents" icon={Users} label="Agentes" />
         <NavItem href="/task-center" icon={FileText} label="Central de Tarefas" />
         <NavItem href="/timeclock" icon={Clock} label="Punch Clock" />
+        <NavItem href="/oracle" icon={Brain} label="ORACLE" />
         
         <p className="px-4 text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-4 mt-8">Governança</p>
         <NavItem href="/policies" icon={FileText} label="Políticas de Score" />
