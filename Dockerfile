@@ -16,6 +16,18 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Generate Prisma Client before building
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
+ARG INGESTION_SECRET
+ENV INGESTION_SECRET=$INGESTION_SECRET
+
+ARG OPENCLAW_BASE_URL
+ENV OPENCLAW_BASE_URL=$OPENCLAW_BASE_URL
+
+ARG OPENCLAW_API_KEY
+ENV OPENCLAW_API_KEY=$OPENCLAW_API_KEY
+
 RUN npx prisma generate
 
 # Next.js telemetry is disabled
