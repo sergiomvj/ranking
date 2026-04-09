@@ -2,10 +2,10 @@ import { PrismaClient } from "@prisma/client";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 
-const dbUrl = `${process.env.DATABASE_URL}`;
+const dbUrl = `${process.env.DATABASE_URL}`.replace(/"/g, '').trim();
 
 function getPoolConfig() {
-  if (!dbUrl || dbUrl === "undefined" || !dbUrl.startsWith("postgres")) {
+  if (!dbUrl || dbUrl === "undefined" || dbUrl === "" || !dbUrl.startsWith("postgres")) {
     return { connectionString: dbUrl };
   }
 
