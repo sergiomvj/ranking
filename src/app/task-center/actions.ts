@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "../../lib/prisma";
 import { injectTasksIntoProject } from "../../lib/tasks/markdownParser";
 import { dispatchToOpenClawSprint } from "../../lib/integrations/openclaw";
+import { serializePrisma } from "../../lib/utils/serialization";
 
 export async function createProjectAction(formData: FormData) {
   const name = formData.get("name") as string;
@@ -75,7 +76,7 @@ export async function deleteProjectAction(projectId: string) {
 }
 
 export async function getAllProjectsWithTasks() {
-  return await prisma.project.findMany({
+  const projects = await prisma.project.findMany({
     orderBy: { createdAt: 'desc' },
     include: {
       tasks: {
@@ -87,4 +88,6 @@ export async function getAllProjectsWithTasks() {
       }
     }
   });
+
+  return serializePrisma(projects);
 }

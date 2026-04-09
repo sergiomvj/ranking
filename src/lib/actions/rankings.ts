@@ -1,5 +1,6 @@
 "use server";
 import { prisma } from "../prisma";
+import { serializePrisma } from "../utils/serialization";
 
 export async function getPeriodRankings(periodCode: string) {
   try {
@@ -19,7 +20,7 @@ export async function getPeriodRankings(periodCode: string) {
       trendDelta: sc.trendDelta?.toNumber() || null
     }));
 
-    return { period, rankings };
+    return serializePrisma({ period, rankings });
   } catch (error) {
     console.error("Database connection failed in rankings:", error);
     return { period: null, rankings: [] };
@@ -84,7 +85,7 @@ export async function getAgentProfile(agentCode: string, periodCode?: string) {
       take: 15
     });
 
-    return { agent, teamDesc, funcDesc, badgesAwarded, consequenceEvents, scorecard, recentExecutions };
+    return serializePrisma({ agent, teamDesc, funcDesc, badgesAwarded, consequenceEvents, scorecard, recentExecutions });
   } catch (error) {
     console.error("Database connection failed in getAgentProfile:", error);
     return null;

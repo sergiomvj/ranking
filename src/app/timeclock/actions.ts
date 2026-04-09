@@ -2,9 +2,10 @@
 
 import { prisma } from "../../lib/prisma";
 import { revalidatePath } from "next/cache";
+import { serializePrisma } from "../../lib/utils/serialization";
 
 export async function getAllAgentsWithSessions() {
-  return await prisma.agent.findMany({
+  const agents = await prisma.agent.findMany({
     orderBy: { displayName: "asc" },
     include: {
       sessions: {
@@ -13,6 +14,7 @@ export async function getAllAgentsWithSessions() {
       }
     }
   });
+  return serializePrisma(agents);
 }
 
 export async function updateManagerNotesAction(agentId: string, notes: string) {

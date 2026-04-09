@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "../prisma";
+import { serializePrisma } from "../utils/serialization";
 
 export async function getDashboardOverview(periodCode: string) {
   try {
@@ -70,7 +71,7 @@ export async function getDashboardOverview(periodCode: string) {
     band: sc.operationalBand,
   })).reverse(); // Reverse para o pior ficar no final ou manter ordenado? Depende da UI.
 
-  return {
+  return serializePrisma({
     period: {
       code: period.code,
       type: period.periodType,
@@ -81,7 +82,7 @@ export async function getDashboardOverview(periodCode: string) {
     bandsDistribution,
     topAgents,
     bottomAgents,
-  };
+  });
   } catch (error) {
     console.error("Database connection failed:", error);
     return null;
