@@ -91,3 +91,26 @@ export async function getAllProjectsWithTasks() {
 
   return serializePrisma(projects);
 }
+
+export async function updateTaskStatusAction(taskId: string, newStatus: string) {
+  const task = await prisma.projectTask.update({
+    where: { id: taskId },
+    data: { status: newStatus },
+    select: { projectId: true }
+  });
+  
+  revalidatePath("/task-center");
+  revalidatePath(`/task-center/project/${task.projectId}`);
+}
+
+export async function assignTaskToAgentAction(taskId: string, agentId: string | null) {
+  const task = await prisma.projectTask.update({
+    where: { id: taskId },
+    data: { assignedAgentId: agentId },
+    select: { projectId: true }
+  });
+
+  revalidatePath("/task-center");
+  revalidatePath(`/task-center/project/${task.projectId}`);
+}
+
