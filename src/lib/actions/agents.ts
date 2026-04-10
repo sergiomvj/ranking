@@ -2,7 +2,7 @@
 
 import { prisma } from "../prisma";
 import { OPENCLAW_AGENTS } from "../config/agents";
-import { fetchOpenClawAgents, updateOpenClawAgent } from "../integrations/openclaw";
+import { fetchOpenClawAgents, updateOpenClawAgent, fetchAgentCareer } from "../integrations/openclaw";
 import { serializePrisma } from "../utils/serialization";
 import { revalidatePath } from "next/cache";
 
@@ -116,10 +116,13 @@ export async function syncAgentsAction() {
 
       if (!existing) {
         console.log(`[Sync] Criando novo agente: ${normalizedCode}`);
+        const career = await fetchAgentCareer(normalizedCode);
+        
         await prisma.agent.create({
           data: {
             code: normalizedCode,
             displayName: agentData.displayName,
+            career: career,
             status: "active",
             metadata: { 
               source: "openclaw_sync_action", 
@@ -130,6 +133,19 @@ export async function syncAgentsAction() {
         results.push({ code: normalizedCode, action: "created" });
       } else {
         console.log(`[Sync] Agente já existe: ${normalizedCode} (ID: ${existing.id})`);
+        
+        // Se o agente já existe mas está sem carreira, tentamos buscar uma vez
+        if (!existing.career) {
+          const career = await fetchAgentCareer(normalizedCode);
+          if (career) {
+            await prisma.agent.update({
+              where: { id: existing.id },
+              data: { career }
+            });
+            console.log(`[Sync] Carreira atualizada para: ${normalizedCode}`);
+          }
+        }
+        
         results.push({ code: normalizedCode, action: "skipped" });
       }
     }

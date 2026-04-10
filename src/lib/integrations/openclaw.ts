@@ -76,6 +76,7 @@ export async function dispatchToOpenClawSprint(projectId: string) {
 
 /**
  * Atualiza o perfil do agente (campo career) no Master do OpenClaw.
+ * Endpoint Oficial: PUT /api/agents/:id/career
  */
 export async function updateOpenClawAgent(agentCode: string, data: { career: string }) {
     const rawApiKey = process.env.OPENCLAW_API_KEY || "";
@@ -85,8 +86,8 @@ export async function updateOpenClawAgent(agentCode: string, data: { career: str
     if (!apiKey || apiKey === "") return { ok: false, error: "API Key não configurada" };
 
     try {
-        const response = await fetch(`${baseUrl}/api/agents/${agentCode.toLowerCase()}`, {
-            method: "POST",
+        const response = await fetch(`${baseUrl}/api/agents/${agentCode.toLowerCase()}/career`, {
+            method: "PUT",
             headers: {
                 "Authorization": `ApiKey ${apiKey}`,
                 "Content-Type": "application/json"
@@ -104,6 +105,33 @@ export async function updateOpenClawAgent(agentCode: string, data: { career: str
     } catch (e: any) {
         console.error(`[OpenClaw Push] Falha crítica na atualização do agente ${agentCode}:`, e);
         return { ok: false, error: e.message };
+    }
+}
+
+/**
+ * Busca a carreira individual de um agente no OpenClaw Master.
+ * Endpoint Oficial: GET /api/agents/:id/career
+ */
+export async function fetchAgentCareer(agentCode: string) {
+    const rawApiKey = process.env.OPENCLAW_API_KEY || "";
+    const apiKey = rawApiKey.replace(/"/g, '').trim();
+    const baseUrl = (process.env.OPENCLAW_BASE_URL || "https://dashboard.fbrapps.com").replace(/"/g, '').trim();
+
+    if (!apiKey || apiKey === "") return null;
+
+    try {
+        const response = await fetch(`${baseUrl}/api/agents/${agentCode.toLowerCase()}/career`, {
+            headers: { "Authorization": `ApiKey ${apiKey}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            return data.career || null;
+        }
+        return null;
+    } catch (e) {
+        console.error(`[OpenClaw Pull] Erro ao buscar carreira do agente ${agentCode}:`, e);
+        return null;
     }
 }
 

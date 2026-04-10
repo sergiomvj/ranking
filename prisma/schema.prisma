@@ -252,6 +252,8 @@ model Agent {
   endedAt           DateTime?   @db.Timestamptz
   lastCheckIn       DateTime?   @db.Timestamptz
   managerNotes      String?     @db.Text
+  skills            String?     @db.Text
+  career            String?     @db.Text
   metadata          Json        @default("{}")
   createdAt         DateTime    @default(now()) @db.Timestamptz
   updatedAt         DateTime    @default(now()) @db.Timestamptz
