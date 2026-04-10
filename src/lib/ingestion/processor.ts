@@ -31,20 +31,33 @@ export async function processTaskIngestion(data: IngestionPayload) {
   }
 
   // 2. Tenta fazer o bind (matching) das entidades
-  const agent = await prisma.agent.findUnique({ where: { code: data.agentCode } });
+  let agent = await prisma.agent.findUnique({ where: { code: data.agentCode } });
   const taskType = await prisma.taskType.findUnique({ where: { code: data.taskTypeCode } });
+
+  // AUTO-DISCOVERY: Se o agente não existe, cria agora para não perder o evento
+  if (!agent) {
+    console.log(`[Discovery] Novo agente detectado via Ingestão: ${data.agentCode}`);
+    agent = await prisma.agent.create({
+      data: {
+        code: data.agentCode,
+        displayName: data.agentCode, // Nome temporário (pode ser editado depois)
+        status: "active",
+        metadata: { 
+          source: "auto_discovery", 
+          discoveredAt: new Date().toISOString() 
+        }
+      }
+    });
+  }
 
   let ingestionStatus: EventIngestionStatus = EventIngestionStatus.received;
   let errorMessage = null;
 
-  if (!agent) {
-    ingestionStatus = EventIngestionStatus.invalid;
-    errorMessage = `Agent with code ${data.agentCode} not found`;
-  } else if (!taskType) {
+  if (!taskType) {
     ingestionStatus = EventIngestionStatus.invalid;
     errorMessage = `TaskType with code ${data.taskTypeCode} not found`;
   } else {
-    // Pode se tornar normalized direto no MVP
+    // Agente agora é garantido (ou já existia ou foi descoberto)
     ingestionStatus = EventIngestionStatus.normalized;
   }
 
