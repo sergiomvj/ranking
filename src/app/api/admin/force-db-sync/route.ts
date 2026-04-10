@@ -15,9 +15,22 @@ export async function GET(req: Request) {
   }
 
   const sqlCommands = [
+    `ALTER TABLE "agents" ADD COLUMN IF NOT EXISTS "skills" TEXT;`,
+    `ALTER TABLE "agents" ADD COLUMN IF NOT EXISTS "career" TEXT;`,
     `ALTER TABLE "agents" ADD COLUMN IF NOT EXISTS "lastCheckIn" TIMESTAMPTZ;`,
     `ALTER TABLE "agents" ADD COLUMN IF NOT EXISTS "managerNotes" TEXT;`,
     
+    // Squads Iniciais (Default)
+    `INSERT INTO "teams" (id, code, name) VALUES (gen_random_uuid(), 'ARVA', 'Squad Arva') ON CONFLICT (code) DO NOTHING;`,
+    `INSERT INTO "teams" (id, code, name) VALUES (gen_random_uuid(), 'MKT', 'Marketing') ON CONFLICT (code) DO NOTHING;`,
+    `INSERT INTO "teams" (id, code, name) VALUES (gen_random_uuid(), 'SUP', 'Suporte FBR') ON CONFLICT (code) DO NOTHING;`,
+    `INSERT INTO "teams" (id, code, name) VALUES (gen_random_uuid(), 'VND', 'Vendas') ON CONFLICT (code) DO NOTHING;`,
+
+    // Funções Iniciais (Default)
+    `INSERT INTO "functions_catalog" (id, code, name) VALUES (gen_random_uuid(), 'LDR', 'Líder / Gestor') ON CONFLICT (code) DO NOTHING;`,
+    `INSERT INTO "functions_catalog" (id, code, name) VALUES (gen_random_uuid(), 'ESP', 'Especialista') ON CONFLICT (code) DO NOTHING;`,
+    `INSERT INTO "functions_catalog" (id, code, name) VALUES (gen_random_uuid(), 'OPR', 'Operador de IA') ON CONFLICT (code) DO NOTHING;`,
+
     // Projetos
     `CREATE TABLE IF NOT EXISTS "projects" (
         "id" UUID NOT NULL DEFAULT gen_random_uuid(),

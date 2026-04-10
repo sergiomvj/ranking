@@ -75,6 +75,39 @@ export async function dispatchToOpenClawSprint(projectId: string) {
 }
 
 /**
+ * Atualiza o perfil do agente (campo career) no Master do OpenClaw.
+ */
+export async function updateOpenClawAgent(agentCode: string, data: { career: string }) {
+    const rawApiKey = process.env.OPENCLAW_API_KEY || "";
+    const apiKey = rawApiKey.replace(/"/g, '').trim();
+    const baseUrl = (process.env.OPENCLAW_BASE_URL || "https://dashboard.fbrapps.com").replace(/"/g, '').trim();
+
+    if (!apiKey || apiKey === "") return { ok: false, error: "API Key não configurada" };
+
+    try {
+        const response = await fetch(`${baseUrl}/api/agents/${agentCode.toLowerCase()}`, {
+            method: "POST",
+            headers: {
+                "Authorization": `ApiKey ${apiKey}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            const error = await response.text();
+            console.error(`[OpenClaw Push] Erro ao atualizar agente ${agentCode}:`, error);
+            return { ok: false, error };
+        }
+
+        return { ok: true };
+    } catch (e: any) {
+        console.error(`[OpenClaw Push] Falha crítica na atualização do agente ${agentCode}:`, e);
+        return { ok: false, error: e.message };
+    }
+}
+
+/**
  * Busca a lista de agentes dinamicamente da API do OpenClaw.
  */
 export async function fetchOpenClawAgents() {

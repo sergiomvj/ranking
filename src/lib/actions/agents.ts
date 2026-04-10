@@ -2,7 +2,7 @@
 
 import { prisma } from "../prisma";
 import { OPENCLAW_AGENTS } from "../config/agents";
-import { fetchOpenClawAgents } from "../integrations/openclaw";
+import { fetchOpenClawAgents, updateOpenClawAgent } from "../integrations/openclaw";
 import { serializePrisma } from "../utils/serialization";
 import { revalidatePath } from "next/cache";
 
@@ -26,6 +26,65 @@ export async function getAllAgents() {
 }
 
 /**
+ * Busca metadados operacionais (Squads e Funções) cadastrados no banco.
+ */
+export async function getOperationalMetadata() {
+  try {
+    const [teams, functions] = await Promise.all([
+      prisma.team.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+      prisma.functionCatalog.findMany({ where: { isActive: true }, orderBy: { name: "asc" } }),
+    ]);
+
+    return {
+      teams: serializePrisma(teams),
+      functions: serializePrisma(functions),
+    };
+  } catch (error) {
+    console.error("Failed to fetch metadata:", error);
+    return { teams: [], functions: [] };
+  }
+}
+
+/**
+ * Atualiza os dados de um agente manualmente.
+ */
+export async function updateAgentAction(agentId: string, data: {
+  displayName?: string;
+  owningTeamId?: string | null;
+  primaryFunctionId?: string | null;
+  status?: any;
+  skills?: string;
+  career?: string;
+  managerNotes?: string;
+}) {
+  try {
+    const updated = await prisma.agent.update({
+      where: { id: agentId },
+      data: {
+        ...data,
+        updatedAt: new Date(),
+      },
+    });
+
+    // Se houver alteração de carreira, tentamos sincronizar com o OpenClaw Master
+    if (data.career) {
+      console.log(`[Sync Push] Enviando atualização de carreira para o OpenClaw: ${updated.code}`);
+      await updateOpenClawAgent(updated.code, { career: data.career });
+    }
+
+    revalidatePath("/agents");
+    revalidatePath(`/agents/${updated.code}`);
+    revalidatePath("/rankings");
+    revalidatePath("/");
+
+    return { ok: true, agent: serializePrisma(updated) };
+  } catch (error: any) {
+    console.error("Failed to update agent:", error);
+    return { ok: false, error: error.message };
+  }
+}
+
+/**
  * Sincroniza a lista de agentes do banco com a configuração OPENCLAW_AGENTS.
  */
 export async function syncAgentsAction() {
@@ -36,10 +95,14 @@ export async function syncAgentsAction() {
     // Tenta buscar da API
     const apiAgents = await fetchOpenClawAgents();
     
-    // Se a API falhar, usamos os 13 agentes cadastrados manualmente como fallback definitivo
-    const sourceAgents = apiAgents || OPENCLAW_AGENTS;
+    // Agora o sistema é puramente dinâmico. Se a API falhar e não houver agentes no banco, ele avisará.
+    const sourceAgents = apiAgents || [];
     
-    console.log(`[Sync] Sincronizando ${sourceAgents.length} agentes. Fonte: ${apiAgents ? 'API Dinâmica' : 'Lista Mestra (Fallback)'}`);
+    if (sourceAgents.length === 0 && !apiAgents) {
+       return { ok: false, error: "Não foi possível conectar à API e não há lista de fallback." };
+    }
+    
+    console.log(`[Sync] Sincronizando ${sourceAgents.length} agentes encontrados via API.`);
 
     for (const agentData of sourceAgents) {
       const normalizedCode = agentData.code.toLowerCase();
