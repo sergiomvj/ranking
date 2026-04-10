@@ -94,14 +94,29 @@ export async function fetchOpenClawAgents() {
         });
 
         if (!response.ok) {
-            console.error(`[OpenClaw Hub] Erro ao buscar agentes. Status: ${response.status}`);
+            const errorBody = await response.text().catch(() => "Sem corpo de erro");
+            console.error(`[OpenClaw Hub] Erro ao buscar agentes. Status: ${response.status}`, {
+                url: `${baseUrl}/api/agents`,
+                response: errorBody
+            });
             return null;
         }
 
         const data = await response.json();
-        return Array.isArray(data) ? data : (data.agents || null);
+        console.log("[OpenClaw Hub] Resposta bruta da API:", JSON.stringify(data).substring(0, 200));
+
+        // Tenta encontrar o array de agentes em diferentes formatos
+        const agents = Array.isArray(data) ? data : (data.agents || data.data || data.list || null);
+        
+        if (!agents) {
+            console.warn("[OpenClaw Hub] Nenhum array de agentes encontrado na resposta da API.");
+        } else {
+            console.log(`[OpenClaw Hub] Sucesso: ${agents.length} agentes detectados na API.`);
+        }
+
+        return agents;
     } catch (e) {
-        console.error("[OpenClaw Hub] Falha ao conectar para buscar lista de agentes:", e);
+        console.error("[OpenClaw Hub] Falha Crítica ao conectar para buscar lista de agentes:", e);
         return null;
     }
 }

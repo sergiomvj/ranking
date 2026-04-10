@@ -33,14 +33,23 @@ export async function syncAgentsAction() {
   try {
     const results: { code: string; action: "created" | "skipped" }[] = [];
 
-    // Tenta buscar da API, mas mantém o static como fallback de segurança
+    // Tenta buscar da API
     const apiAgents = await fetchOpenClawAgents();
-    const sourceAgents = apiAgents || OPENCLAW_AGENTS;
+    
+    if (!apiAgents) {
+      console.error("[Sync] Falha ao obter dados da API Master. O fallback estático foi desativado para diagnóstico.");
+      return { 
+        ok: false, 
+        error: "Falha ao conectar com o Servidor Master do OpenClaw. Verifique os logs de Runtime." 
+      };
+    }
 
-    console.log(`[Sync] Fonte de dados: ${apiAgents ? "API Dinâmica" : "Lista Estática (Fallback)"}`);
+    const sourceAgents = apiAgents;
+    console.log(`[Sync] Sucesso: ${sourceAgents.length} agentes recebidos via API.`);
 
     for (const agentData of sourceAgents) {
       const normalizedCode = agentData.code.toLowerCase();
+      // ... restante da lógica continua igual
       // Busca case-insensitive simulada garantindo o match correto no banco
       const existing = await prisma.agent.findFirst({ 
         where: { 
