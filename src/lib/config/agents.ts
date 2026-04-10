@@ -4,12 +4,17 @@
  * validação de agentes permitidos no Hub.
  */
 export const OPENCLAW_AGENTS = [
-  { code: "bia",       displayName: "Bia" },
-  { code: "chiara",    displayName: "Chiara" },
-  { code: "david",     displayName: "David" },
+  { code: "bia",       displayName: "Ana Beatriz Schultz" },
+  { code: "chiara",    displayName: "Chiara Garcia" },
+  { code: "david",     displayName: "David Novaes" },
   { code: "lia",       displayName: "Lia" },
-  { code: "mila",      displayName: "Mila" },
-  { code: "leon",      displayName: "Leon" },
-  { code: "maia",      displayName: "Maia" },
-  { code: "secretary", displayName: "Secretary" },
+  { code: "mila",      displayName: "Mila Castro" },
+  { code: "leon",      displayName: "Leon Guavamango" },
+  { code: "maia",      displayName: "Maia Mendes" },
+  { code: "secretary", displayName: "Priscila Secretary" },
+  { code: "cinthia",   displayName: "Cinthia Yamamatsu" },
+  { code: "maria",     displayName: "Maria Rodrigues" },
+  { code: "erick",     displayName: "Erick Moraes" },
+  { code: "gabe",      displayName: "Gabe Castro" },
+  { code: "giorgian",  displayName: "Giorgian Castro" },
 ];

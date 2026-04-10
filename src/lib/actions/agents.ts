@@ -36,16 +36,10 @@ export async function syncAgentsAction() {
     // Tenta buscar da API
     const apiAgents = await fetchOpenClawAgents();
     
-    if (!apiAgents) {
-      console.error("[Sync] Falha ao obter dados da API Master. O fallback estático foi desativado para diagnóstico.");
-      return { 
-        ok: false, 
-        error: "Falha ao conectar com o Servidor Master do OpenClaw. Verifique os logs de Runtime." 
-      };
-    }
-
-    const sourceAgents = apiAgents;
-    console.log(`[Sync] Sucesso: ${sourceAgents.length} agentes recebidos via API.`);
+    // Se a API falhar, usamos os 13 agentes cadastrados manualmente como fallback definitivo
+    const sourceAgents = apiAgents || OPENCLAW_AGENTS;
+    
+    console.log(`[Sync] Sincronizando ${sourceAgents.length} agentes. Fonte: ${apiAgents ? 'API Dinâmica' : 'Lista Mestra (Fallback)'}`);
 
     for (const agentData of sourceAgents) {
       const normalizedCode = agentData.code.toLowerCase();

@@ -12,10 +12,11 @@ interface OpenClawSprintPayload {
 }
 
 export async function dispatchToOpenClawSprint(projectId: string) {
-    const apiKey = process.env.OPENCLAW_API_KEY;
-    const baseUrl = process.env.OPENCLAW_BASE_URL || "https://dashboard.fbrapps.com";
+    const rawApiKey = process.env.OPENCLAW_API_KEY || "";
+    const apiKey = rawApiKey.replace(/"/g, '').trim();
+    const baseUrl = (process.env.OPENCLAW_BASE_URL || "https://dashboard.fbrapps.com").replace(/"/g, '').trim();
 
-    if (!apiKey) {
+    if (!apiKey || apiKey === "") {
         console.warn("[OpenClaw Hub] API Key não detectada. Pulando o Hook de Integração de Sprint.");
         return;
     }
@@ -77,10 +78,11 @@ export async function dispatchToOpenClawSprint(projectId: string) {
  * Busca a lista de agentes dinamicamente da API do OpenClaw.
  */
 export async function fetchOpenClawAgents() {
-    const apiKey = process.env.OPENCLAW_API_KEY;
-    const baseUrl = process.env.OPENCLAW_BASE_URL || "https://dashboard.fbrapps.com";
+    const rawApiKey = process.env.OPENCLAW_API_KEY || "";
+    const apiKey = rawApiKey.replace(/"/g, '').trim();
+    const baseUrl = (process.env.OPENCLAW_BASE_URL || "https://dashboard.fbrapps.com").replace(/"/g, '').trim();
 
-    if (!apiKey) {
+    if (!apiKey || apiKey === "") {
         console.warn("[OpenClaw Hub] API Key não detectada para busca de agentes.");
         return null;
     }
