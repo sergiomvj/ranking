@@ -964,15 +964,23 @@ model TaskLifecycleEvent {
 }
 
 model AgentSession {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  agentId   String   @db.Uuid
-  clockInAt DateTime @default(now()) @db.Timestamptz
-  status    String   @default("active") // active, completed
-  notes     String?  @db.Text // Snapshotted admin notes for audit
-  createdAt DateTime @default(now()) @db.Timestamptz
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  agentId           String   @db.Uuid
+  externalSessionId String?  @unique // ID externo (TelegramID, WhatsAppHubID, etc)
+  sourceSystem      String?          // Sistema de origem da memória
+  contextSummary    String?  @db.Text // Resumo executivo da conversa (SMT)
+  activeThreads     Json     @default("[]") // Lista de temas sendo lembrados
+  lastInteraction   DateTime @default(now()) @db.Timestamptz
+  clockInAt         DateTime @default(now()) @db.Timestamptz
+  status            String   @default("active") // active, completed, resolved
+  notes             String?  @db.Text // Notas do gestor ou resumo operacional
+  metadata          Json     @default("{}")
+  createdAt         DateTime @default(now()) @db.Timestamptz
+  updatedAt         DateTime @default(now()) @db.Timestamptz
 
   agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
   @@index([agentId, clockInAt(sort: Desc)])
+  @@index([externalSessionId])
   @@map("agent_sessions")
 }

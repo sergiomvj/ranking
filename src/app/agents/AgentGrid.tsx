@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { ShieldCheck, Activity, Clock, Edit2, Tag } from "lucide-react";
+import { ShieldCheck, Activity, Clock, Edit2, Tag, GraduationCap, Brain } from "lucide-react";
 import Link from "next/link";
 import { EditAgentModal } from "./EditAgentModal";
+import { AgentMemoryModal } from "./AgentMemoryModal";
 
 interface AgentGridProps {
   initialAgents: any[];
@@ -16,7 +17,8 @@ interface AgentGridProps {
 }
 
 export function AgentClientGrid({ initialAgents, metadata }: AgentGridProps) {
-  const [selectedAgent, setSelectedAgent] = useState<any | null>(null);
+  const [selectedAgentForEdit, setSelectedAgentForEdit] = useState<any | null>(null);
+  const [selectedAgentForMemory, setSelectedAgentForMemory] = useState<any | null>(null);
 
   return (
     <>
@@ -25,51 +27,65 @@ export function AgentClientGrid({ initialAgents, metadata }: AgentGridProps) {
           <AgentCard 
             key={agent.id} 
             agent={agent} 
-            onEdit={() => setSelectedAgent(agent)} 
+            onEdit={() => setSelectedAgentForEdit(agent)} 
+            onMemory={() => setSelectedAgentForMemory(agent)}
           />
         ))}
       </div>
 
-      {selectedAgent && (
+      {selectedAgentForEdit && (
         <EditAgentModal
-          agent={selectedAgent}
+          agent={selectedAgentForEdit}
           teams={metadata.teams}
           functions={metadata.functions}
-          onClose={() => setSelectedAgent(null)}
+          onClose={() => setSelectedAgentForEdit(null)}
           onSuccess={() => {
-            // Recarrega a página para ver as mudanças refletidas via revalidatePath
             window.location.reload();
           }}
+        />
+      )}
+
+      {selectedAgentForMemory && (
+        <AgentMemoryModal 
+          agent={selectedAgentForMemory}
+          onClose={() => setSelectedAgentForMemory(null)}
         />
       )}
     </>
   );
 }
 
-function AgentCard({ agent, onEdit }: { agent: any; onEdit: () => void }) {
+function AgentCard({ agent, onEdit, onMemory }: { agent: any; onEdit: () => void; onMemory: () => void }) {
   const isOnline = agent.lastCheckIn && (new Date().getTime() - new Date(agent.lastCheckIn).getTime() < 1000 * 60 * 60);
-
-  // Divide as habilidades por vírgula para exibir como tags
-  const skillsList = agent.skills 
-    ? agent.skills.split(",").map((s: string) => s.trim()).filter((s: string) => s !== "") 
-    : [];
 
   return (
     <div className="group relative bg-white/[0.02] border border-white/10 rounded-2xl p-5 hover:bg-white/[0.05] hover:border-emerald-500/30 transition-all duration-300 overflow-hidden flex flex-col h-full">
       {/* Glow Effect */}
       <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
       
-      {/* Botão de Editar (Novo) */}
-      <button 
-        onClick={(e) => {
-          e.preventDefault();
-          onEdit();
-        }}
-        className="absolute right-4 top-14 p-2 rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-emerald-500/20 hover:border-emerald-500/40 opacity-0 group-hover:opacity-100 transition-all z-10"
-        title="Editar Perfil no Hub"
-      >
-        <Edit2 size={14} />
-      </button>
+      {/* Botões de Ação */}
+      <div className="absolute right-4 top-14 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all z-10">
+        <button 
+          onClick={(e) => {
+            e.preventDefault();
+            onEdit();
+          }}
+          className="p-2 rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-white hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-all"
+          title="Editar Perfil"
+        >
+          <Edit2 size={14} />
+        </button>
+        <button 
+          onClick={(e) => {
+            e.preventDefault();
+            onMemory();
+          }}
+          className="p-2 rounded-lg bg-white/5 border border-white/10 text-emerald-500/70 hover:text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/40 transition-all"
+          title="Session Bridge (Memória)"
+        >
+          <Brain size={14} />
+        </button>
+      </div>
 
       <Link href={`/agents/${agent.code}`} className="flex-1">
         <div className="flex justify-between items-start mb-4">
@@ -110,7 +126,7 @@ function AgentCard({ agent, onEdit }: { agent: any; onEdit: () => void }) {
           </div>
         </div>
 
-        {/* Seção de Carreira (Novo) */}
+        {/* Seção de Carreira */}
         <div className="mt-4 pt-4 border-t border-white/5">
           <p className="text-[10px] font-bold text-emerald-500/70 uppercase tracking-widest mb-2 flex items-center gap-1">
             <GraduationCap size={10} /> Carreira / Perfil

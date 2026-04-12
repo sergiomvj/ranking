@@ -100,3 +100,65 @@ export async function processTaskIngestion(data: IngestionPayload) {
 
   return { status: ingestionStatus, eventId: event.id, error: errorMessage };
 }
+export interface MemoryIngestionPayload {
+  agentCode: string;
+  externalSessionId: string;
+  sourceSystem: string;
+  contextSummary: string;
+  activeThreads: any;
+  metadata?: any;
+}
+
+/**
+ * Processa um payload de memória (Session Bridge) vindo dos agentes.
+ * Implementa a Janela de Agrupamento de 24h.
+ */
+export async function processMemoryIngestion(data: MemoryIngestionPayload) {
+  // 1. Localiza o agente
+  const agent = await prisma.agent.findUnique({ where: { code: data.agentCode } });
+  if (!agent) {
+    throw new Error(`Agent with code ${data.agentCode} not found for memory sync`);
+  }
+
+  // 2. Verifica se existe uma sessão ativa para este ID externo nos últimos 24h (Janela de Agrupamento)
+  const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  
+  const existingSession = await prisma.agentSession.findFirst({
+    where: {
+      agentId: agent.id,
+      externalSessionId: data.externalSessionId,
+      status: "active",
+      updatedAt: { gte: last24h }
+    }
+  });
+
+  if (existingSession) {
+    // Atualiza a sessão existente
+    return await prisma.agentSession.update({
+      where: { id: existingSession.id },
+      data: {
+        contextSummary: data.contextSummary,
+        activeThreads: data.activeThreads ?? [],
+        lastInteraction: new Date(),
+        metadata: {
+          ...(existingSession.metadata as any),
+          ...(data.metadata ?? {}),
+          lastUpdateSource: "webhook"
+        }
+      }
+    });
+  }
+
+  // 3. Se não existe ou passou da janela, cria uma nova sessão/thread
+  return await prisma.agentSession.create({
+    data: {
+      agentId: agent.id,
+      externalSessionId: data.externalSessionId,
+      sourceSystem: data.sourceSystem,
+      contextSummary: data.contextSummary,
+      activeThreads: data.activeThreads ?? [],
+      status: "active",
+      metadata: data.metadata ?? {}
+    }
+  });
+}

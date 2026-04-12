@@ -92,14 +92,16 @@ export async function syncAgentsAction() {
   try {
     const results: { code: string; action: "created" | "skipped" }[] = [];
 
-    // Tenta buscar da API
+    // Sincronização Híbrida: Tenta a API, se falhar usa o Fallback de Segurança (Config)
     const apiAgents = await fetchOpenClawAgents();
+    const sourceAgents = apiAgents || OPENCLAW_AGENTS;
     
-    // Agora o sistema é puramente dinâmico. Se a API falhar e não houver agentes no banco, ele avisará.
-    const sourceAgents = apiAgents || [];
-    
-    if (sourceAgents.length === 0 && !apiAgents) {
-       return { ok: false, error: "Não foi possível conectar à API e não há lista de fallback." };
+    if (sourceAgents.length === 0) {
+       return { ok: false, error: "Não foi possível carregar agentes via API nem via lista de segurança." };
+    }
+
+    if (!apiAgents) {
+      console.warn("[Sync] API Master falhou (401 ou Timeout). Utilizando lista de fallback local.");
     }
     
     console.log(`[Sync] Sincronizando ${sourceAgents.length} agentes encontrados via API.`);
@@ -167,5 +169,29 @@ export async function syncAgentsAction() {
       ok: false, 
       error: `Falha técnica: ${error.message || "Erro desconhecido no banco de dados"}` 
     };
+  }
+}
+/**
+ * Busca as sessões de memória (Session Bridge) de um agente.
+ * Aplica TTL de 72h e limite de 20 threads.
+ */
+export async function getAgentSessions(agentId: string) {
+  try {
+    const ttl72h = new Date(Date.now() - 72 * 60 * 60 * 1000);
+
+    const sessions = await prisma.agentSession.findMany({
+      where: {
+        agentId,
+        status: "active",
+        lastInteraction: { gte: ttl72h }
+      },
+      orderBy: { lastInteraction: "desc" },
+      take: 20
+    });
+
+    return serializePrisma(sessions);
+  } catch (error) {
+    console.error(`[Sessions] Error fetching sessions for agent ${agentId}:`, error);
+    return [];
   }
 }

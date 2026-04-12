@@ -20,6 +20,16 @@ export async function GET(req: Request) {
     `ALTER TABLE "agents" ADD COLUMN IF NOT EXISTS "lastCheckIn" TIMESTAMPTZ;`,
     `ALTER TABLE "agents" ADD COLUMN IF NOT EXISTS "managerNotes" TEXT;`,
     
+    // Atualização do AgentSession (Session Bridge)
+    `ALTER TABLE "agent_sessions" ADD COLUMN IF NOT EXISTS "externalSessionId" TEXT;`,
+    `ALTER TABLE "agent_sessions" ADD COLUMN IF NOT EXISTS "sourceSystem" TEXT;`,
+    `ALTER TABLE "agent_sessions" ADD COLUMN IF NOT EXISTS "contextSummary" TEXT;`,
+    `ALTER TABLE "agent_sessions" ADD COLUMN IF NOT EXISTS "activeThreads" JSONB DEFAULT '[]';`,
+    `ALTER TABLE "agent_sessions" ADD COLUMN IF NOT EXISTS "lastInteraction" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP;`,
+    `ALTER TABLE "agent_sessions" ADD COLUMN IF NOT EXISTS "metadata" JSONB DEFAULT '{}';`,
+    `ALTER TABLE "agent_sessions" ADD COLUMN IF NOT EXISTS "updatedAt" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP;`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS "agent_sessions_externalSessionId_key" ON "agent_sessions"("externalSessionId");`,
+
     // Squads Iniciais (Default)
     `INSERT INTO "teams" (id, code, name) VALUES (gen_random_uuid(), 'ARVA', 'Squad Arva') ON CONFLICT (code) DO NOTHING;`,
     `INSERT INTO "teams" (id, code, name) VALUES (gen_random_uuid(), 'MKT', 'Marketing') ON CONFLICT (code) DO NOTHING;`,
